@@ -3,6 +3,7 @@
     <img alt="Vue logo" src="./assets/title.png" width=100%>
     <movie>
     </movie>
+    <!-- <movie1></movie1> -->
   </div>
 </template>
 

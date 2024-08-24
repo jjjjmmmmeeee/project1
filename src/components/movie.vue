@@ -90,14 +90,14 @@
           label="操作"
           width="120">
           <template >
-            <!-- <el-button
+            <el-button
               @click="goToTaskDetail"
               size="mini"
               type="text">
               查看详情
-            </el-button> -->
-            <router-link to="/movie1">查看详情</router-link>
-            <router-view></router-view>
+            </el-button>
+            <!-- <a href="/src/components/movie1.vue">查看详情</a> -->
+            
           </template>
         </el-table-column>
       </el-table>
@@ -111,7 +111,9 @@
         :total="total">
       </el-pagination>
     </div>
+
   </div>
+  
 </template>
 <style>
 .container {
@@ -182,9 +184,6 @@ export default {
           console.error("请求失败:", error);
         });
     },
-    goToTaskDetail(){
-      this.$router.push('/movie1');
-    }
   },
   created() {
     this.fetchData();

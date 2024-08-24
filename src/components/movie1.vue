@@ -1,7 +1,8 @@
 <template>
+
   <div>
     <ul>
-      <!-- <li v-for="item in tableData"> -->
+      <li v-for="item in tableData">
          <h1>标题：{{ item.title }}</h1>
          <p>描述：{{ item.description }}</p>
          <p>截止时间：{{ item.dueTime }}</p>
@@ -30,7 +31,7 @@
         
         
         
-      <!-- </li> -->
+      </li>
     
       
     </ul>
