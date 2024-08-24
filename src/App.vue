@@ -1,12 +1,9 @@
 <template>
   <div id="app">
     <img alt="Vue logo" src="./assets/title.png" width=100%>
-    <div>
-    </div>
-    <movie></movie>
+    <movie>
+    </movie>
   </div>
-  <!-- <Login></Login> -->
-  
 </template>
 
 <script>
@@ -14,6 +11,7 @@ import Hello from './components/Hello.vue'
 import movie from './components/movie.vue'
 import axios from 'axios'
 import Login from './components/Login.vue'
+import Movie1 from './components/movie1.vue'
 export default {
   name: 'App',
   data:function(){
@@ -34,7 +32,8 @@ export default {
   },
   components: {
     Hello,movie,
-    Login
+    Login,
+    Movie1
   }
 }
 </script>

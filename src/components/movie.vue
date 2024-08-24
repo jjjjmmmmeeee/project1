@@ -44,7 +44,7 @@
           width="80">
           <template slot="header">
             <span>名字</span>
-            
+          
           </template>
         </el-table-column>
         <el-table-column
@@ -53,7 +53,7 @@
           width="180">
           <template slot="header">
             <span>开始地点</span>
-           
+            
           </template>
         </el-table-column>
         <el-table-column
@@ -62,7 +62,7 @@
           width="180">
           <template slot="header">
             <span>结束地点</span>
-            
+           
           </template>
         </el-table-column>
         <el-table-column
@@ -71,8 +71,8 @@
           <template slot="header">
             <span>发布时间</span>
             <el-button @click="handleSort('publish_time')" size="mini" type="text">
+
               <i :class="['el-icon-d-caret', iconClass]"></i>
-              <!-- {{ Filter.sortOrder === 'publish_time' ? (Filter.isDesc ? '降序' : '升序') : '排序' }} -->
             </el-button>
           </template>
         </el-table-column>
@@ -83,8 +83,21 @@
             <span>报酬/元</span>
             <el-button @click="handleSort('reward')" size="mini" type="text">
               <i :class="['el-icon-d-caret', iconClass]"></i>
-              <!-- {{ Filter.sortOrder === 'reward' ? (Filter.isDesc ? '降序' : '升序') : '排序' }} -->
             </el-button>
+          </template>
+        </el-table-column>
+        <el-table-column
+          label="操作"
+          width="120">
+          <template >
+            <!-- <el-button
+              @click="goToTaskDetail"
+              size="mini"
+              type="text">
+              查看详情
+            </el-button> -->
+            <router-link to="/movie1">查看详情</router-link>
+            <router-view></router-view>
           </template>
         </el-table-column>
       </el-table>
@@ -123,6 +136,7 @@
 </style>
 <script>
 import axios from "axios";
+import movie1 from "./movie1.vue";
 
 export default {
   methods: {
@@ -159,7 +173,7 @@ export default {
       this.fetchData();
     },
     fetchData() {
-      axios.post("/availabletask/task",  this.Filter )
+      axios.post("/availableTask",  this.Filter )
         .then((res) => {
           this.tableData = res.data.records;
           this.total = res.data.total;
@@ -168,6 +182,9 @@ export default {
           console.error("请求失败:", error);
         });
     },
+    goToTaskDetail(){
+      this.$router.push('/movie1');
+    }
   },
   created() {
     this.fetchData();
@@ -178,11 +195,12 @@ export default {
       Filter: {
         campus: "", // 校区筛选条件
         sex: "", // 性别筛选条件
-        sortOrder: "publish_time", // 排序属性
+        sortOrder: "reward", // 排序属性
         page: 1,
-        isDesc: false, // 是否降序
+        isDesc: true, // 是否降序
       },
       total: 0,
+      id:1,
       campusOptions: [
         { value: "", label: "全部" },
         { value: "A", label: "校区A" },
