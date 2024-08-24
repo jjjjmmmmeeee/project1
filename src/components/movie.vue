@@ -1,57 +1,127 @@
 <template>
-  <div>
-    <el-select v-model="value" placeholder="请选择校区">
-    <el-option
-      v-for="item in options"
-      :key="item.value"
-      :label="item.label"
-      :value="item.value">
-    </el-option>
-  </el-select>
-    <el-table :data="tableData" style="width: 100%" :row-class-name="tableRowClassName">
-      <el-table-column prop="username" label="名字" width="80">
-      </el-table-column>
-      <el-table-column prop="startAddress" label="开始地点" width="180">
-      </el-table-column>
-      <el-table-column prop="endAddress" label="结束地点" width="180">
-      </el-table-column>
-      <el-table-column prop="publishTime" label="发布时间"> </el-table-column>
-    </el-table>
-    <el-pagination @current-change="handleCurrentChange" :current-page="this.Filter.page" :page-sizes="[5, 10, 15, 20]"
-      :page-size="10" layout="total, prev, pager, next, jumper" :total="total">
-    </el-pagination>
+  <div class="container">
+    <!-- 左边选择器 -->
+    <el-form class="filters">
+      <!-- 校区选择器 -->
+      <el-form-item label="校区：">
+        <el-select
+          v-model="Filter.campus"
+          placeholder="请选择校区"
+          @change="handleCampusChange"
+          class="filter-selector">
+          <el-option
+            v-for="item in campusOptions"
+            :key="item.value"
+            :label="item.label"
+            :value="item.value">
+          </el-option>
+        </el-select>
+      </el-form-item>
+
+      <!-- 性别选择器 -->
+      <el-form-item label="发布者所在宿舍（男/女）：">
+        <el-select
+          v-model="Filter.sex"
+          placeholder="请选择男/女宿舍订单"
+          @change="handleSexChange"
+          class="filter-selector">
+          <el-option
+            v-for="item in sexOptions"
+            :key="item.value"
+            :label="item.label"
+            :value="item.value">
+          </el-option>
+        </el-select>
+      </el-form-item>
+    </el-form>
+
+    <!-- 右边表格和分页 -->
+    <div class="table-container">
+      <el-table :data="tableData" style="width: 100%" :row-class-name="tableRowClassName">
+        <el-table-column
+          prop="username"
+          label="名字"
+          width="80">
+          <template slot="header">
+            <span>名字</span>
+            
+          </template>
+        </el-table-column>
+        <el-table-column
+          prop="startAddress"
+          label="开始地点"
+          width="180">
+          <template slot="header">
+            <span>开始地点</span>
+           
+          </template>
+        </el-table-column>
+        <el-table-column
+          prop="endAddress"
+          label="结束地点"
+          width="180">
+          <template slot="header">
+            <span>结束地点</span>
+            
+          </template>
+        </el-table-column>
+        <el-table-column
+          prop="publishTime"
+          label="发布时间">
+          <template slot="header">
+            <span>发布时间</span>
+            <el-button @click="handleSort('publish_time')" size="mini" type="text">
+              <i :class="['el-icon-d-caret', iconClass]"></i>
+              <!-- {{ Filter.sortOrder === 'publish_time' ? (Filter.isDesc ? '降序' : '升序') : '排序' }} -->
+            </el-button>
+          </template>
+        </el-table-column>
+        <el-table-column
+          prop="reward"
+          label="报酬/元">
+          <template slot="header">
+            <span>报酬/元</span>
+            <el-button @click="handleSort('reward')" size="mini" type="text">
+              <i :class="['el-icon-d-caret', iconClass]"></i>
+              <!-- {{ Filter.sortOrder === 'reward' ? (Filter.isDesc ? '降序' : '升序') : '排序' }} -->
+            </el-button>
+          </template>
+        </el-table-column>
+      </el-table>
+
+      <el-pagination
+        @current-change="handleCurrentChange"
+        :current-page="Filter.page"
+        :page-sizes="[5, 10, 15, 20]"
+        :page-size="10"
+        layout="total, prev, pager, next, jumper"
+        :total="total">
+      </el-pagination>
+    </div>
   </div>
 </template>
-
 <style>
-.rating {
-  unicode-bidi: bidi-override;
-  direction: rtl;
+.container {
+  display: flex;
+  align-items: flex-start;
 }
 
-.rating>span {
-  display: inline-block;
-  position: relative;
-  width: 1.1em;
+.filters {
+  display: flex;
+  flex-direction: column; /* 垂直排列选择器 */
+  margin-right: 20px;
 }
 
-.rating>span:hover:before,
-.rating>span:hover~span:before {
-  content: "\2605";
-  position: absolute;
+.filter-selector {
+  margin-bottom: 20px;
+  width: 200px;
 }
 
-.el-table .warning-row {
-  background: oldlace;
-}
-
-.el-table .success-row {
-  background: #f0f9eb;
+.table-container {
+  flex-grow: 1;
 }
 </style>
-
 <script>
-import request from "@/utils/request";
 import axios from "axios";
 
 export default {
@@ -68,41 +138,63 @@ export default {
       this.Filter.page = val;
       this.fetchData();
     },
+    handleCampusChange() {
+      this.Filter.page = 1;
+      this.fetchData();
+    },
+    handleSexChange() {
+      this.Filter.page = 1;
+      this.fetchData();
+    },
+    handleSort(property) {
+      // 如果当前排序属性与点击的列相同，切换升序/降序
+      if (this.Filter.sortOrder === property) {
+        this.Filter.isDesc = !this.Filter.isDesc;
+      } else {
+        // 否则，设置新的排序属性，默认升序
+        this.Filter.sortOrder = property;
+        this.Filter.isDesc = false;
+      }
+      this.Filter.page = 1; // 每次排序时重置页码为1
+      this.fetchData();
+    },
     fetchData() {
-      axios.post("/availabletask/task", this.Filter).then((res) => {
-        this.tableData = res.data.records;
-        this.total = res.data.total;
-      });
+      axios.post("/availabletask/task",  this.Filter )
+        .then((res) => {
+          this.tableData = res.data.records;
+          this.total = res.data.total;
+        })
+        .catch((error) => {
+          console.error("请求失败:", error);
+        });
     },
   },
-  created: function () {
+  created() {
     this.fetchData();
   },
   data() {
     return {
       tableData: [],
       Filter: {
-        campus: "",
-        sex: "",
-        sortOrder: "publish_time",
+        campus: "", // 校区筛选条件
+        sex: "", // 性别筛选条件
+        sortOrder: "publish_time", // 排序属性
         page: 1,
-        isDesc: false,
+        isDesc: false, // 是否降序
       },
       total: 0,
-      options: [{
-          value: '选项1',
-          label: 'A'
-        }, {
-          value: '选项2',
-          label: 'B'
-        }, {
-          value: '选项3',
-          label: 'C'
-        }, {
-          value: '选项4',
-          label: 'D'
-        }],
-         value: ''
+      campusOptions: [
+        { value: "", label: "全部" },
+        { value: "A", label: "校区A" },
+        { value: "B", label: "校区B" },
+        { value: "C", label: "校区C" },
+        { value: "D", label: "校区D" },
+      ],
+      sexOptions: [
+        { value: "", label: "全部" },
+        { value: "male", label: "男" },
+        { value: "female", label: "女" },
+      ],
     };
   },
 };
