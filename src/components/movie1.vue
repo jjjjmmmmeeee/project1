@@ -1,8 +1,8 @@
 <template>
-     <h1>任务详情</h1>
-  <!-- <div>
+     <!-- <h1>任务详情</h1> -->
+  <div>
     <ul>
-      <li v-for="item in tableData">
+      <li v-for="item in tableData" :key="item.id">
          <h1>标题：{{ item.title }}</h1>
          <p>描述：{{ item.description }}</p>
          <p>截止时间：{{ item.dueTime }}</p>
@@ -36,7 +36,7 @@
       
     </ul>
     <button class="button">接单</button>
-  </div> -->
+  </div>
 </template>
 
 <style>

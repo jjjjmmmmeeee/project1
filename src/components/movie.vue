@@ -38,13 +38,13 @@
     <!-- 右边表格和分页 -->
     <div class="table-container">
       <el-table :data="tableData" style="width: 100%" :row-class-name="tableRowClassName">
+        <!-- 表格列 -->
         <el-table-column
           prop="username"
           label="名字"
           width="80">
           <template slot="header">
             <span>名字</span>
-          
           </template>
         </el-table-column>
         <el-table-column
@@ -53,7 +53,6 @@
           width="180">
           <template slot="header">
             <span>开始地点</span>
-            
           </template>
         </el-table-column>
         <el-table-column
@@ -62,7 +61,6 @@
           width="180">
           <template slot="header">
             <span>结束地点</span>
-           
           </template>
         </el-table-column>
         <el-table-column
@@ -71,8 +69,7 @@
           <template slot="header">
             <span>发布时间</span>
             <el-button @click="handleSort('publish_time')" size="mini" type="text">
-
-              <i :class="['el-icon-d-caret', iconClass]"></i>
+              <i :class="['el-icon-d-caret']"></i>
             </el-button>
           </template>
         </el-table-column>
@@ -82,22 +79,21 @@
           <template slot="header">
             <span>报酬/元</span>
             <el-button @click="handleSort('reward')" size="mini" type="text">
-              <i :class="['el-icon-d-caret', iconClass]"></i>
+              <i :class="['el-icon-d-caret']"></i>
             </el-button>
           </template>
         </el-table-column>
         <el-table-column
           label="操作"
           width="120">
-          <template >
+          <template slot-scope="scope">
             <el-button
-              @click="goToTaskDetail"
+              @click="goToTaskDetail(scope.row.id)"
               size="mini"
               type="text">
               查看详情
             </el-button>
-            <!-- <a href="/src/components/movie1.vue">查看详情</a> -->
-            
+            <p>{{ scope.row.id }}</p> <!-- 添加这一行用于调试 -->
           </template>
         </el-table-column>
       </el-table>
@@ -113,32 +109,10 @@
     </div>
 
   </div>
-  
 </template>
-<style>
-.container {
-  display: flex;
-  align-items: flex-start;
-}
 
-.filters {
-  display: flex;
-  flex-direction: column; /* 垂直排列选择器 */
-  margin-right: 20px;
-}
-
-.filter-selector {
-  margin-bottom: 20px;
-  width: 200px;
-}
-
-.table-container {
-  flex-grow: 1;
-}
-</style>
 <script>
 import axios from "axios";
-import movie1 from "./movie1.vue";
 
 export default {
   methods: {
@@ -163,11 +137,9 @@ export default {
       this.fetchData();
     },
     handleSort(property) {
-      // 如果当前排序属性与点击的列相同，切换升序/降序
       if (this.Filter.sortOrder === property) {
         this.Filter.isDesc = !this.Filter.isDesc;
       } else {
-        // 否则，设置新的排序属性，默认升序
         this.Filter.sortOrder = property;
         this.Filter.isDesc = false;
       }
@@ -184,8 +156,8 @@ export default {
           console.error("请求失败:", error);
         });
     },
-    goToTaskDetail(){
-      this.$router.push({path:'/TaskIfo'})
+    goToTaskDetail(id) {
+      this.$router.push({ path: '/TaskIfo', query: { id: id } });
     }
   },
   created() {
@@ -202,7 +174,6 @@ export default {
         isDesc: true, // 是否降序
       },
       total: 0,
-      id:1,
       campusOptions: [
         { value: "", label: "全部" },
         { value: "A", label: "校区A" },
@@ -219,3 +190,25 @@ export default {
   },
 };
 </script>
+
+<style>
+.container {
+  display: flex;
+  align-items: flex-start;
+}
+
+.filters {
+  display: flex;
+  flex-direction: column;
+  margin-right: 20px;
+}
+
+.filter-selector {
+  margin-bottom: 20px;
+  width: 200px;
+}
+
+.table-container {
+  flex-grow: 1;
+}
+</style>
