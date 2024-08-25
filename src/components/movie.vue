@@ -184,6 +184,9 @@ export default {
           console.error("请求失败:", error);
         });
     },
+    goToTaskDetail(){
+      this.$router.push({path:'/TaskIfo'})
+    }
   },
   created() {
     this.fetchData();

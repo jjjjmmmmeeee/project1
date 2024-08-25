@@ -1,6 +1,6 @@
 <template>
-
-  <div>
+     <h1>任务详情</h1>
+  <!-- <div>
     <ul>
       <li v-for="item in tableData">
          <h1>标题：{{ item.title }}</h1>
@@ -36,7 +36,7 @@
       
     </ul>
     <button class="button">接单</button>
-  </div>
+  </div> -->
 </template>
 
 <style>
