@@ -4,32 +4,16 @@
     <el-form class="filters">
       <!-- 校区选择器 -->
       <el-form-item label="校区：">
-        <el-select
-          v-model="Filter.campus"
-          placeholder="请选择校区"
-          @change="handleCampusChange"
-          class="filter-selector">
-          <el-option
-            v-for="item in campusOptions"
-            :key="item.value"
-            :label="item.label"
-            :value="item.value">
+        <el-select v-model="Filter.campus" placeholder="请选择校区" @change="handleCampusChange" class="filter-selector">
+          <el-option v-for="item in campusOptions" :key="item.value" :label="item.label" :value="item.value">
           </el-option>
         </el-select>
       </el-form-item>
 
       <!-- 性别选择器 -->
       <el-form-item label="发布者所在宿舍（男/女）：">
-        <el-select
-          v-model="Filter.sex"
-          placeholder="请选择男/女宿舍订单"
-          @change="handleSexChange"
-          class="filter-selector">
-          <el-option
-            v-for="item in sexOptions"
-            :key="item.value"
-            :label="item.label"
-            :value="item.value">
+        <el-select v-model="Filter.sex" placeholder="请选择男/女宿舍订单" @change="handleSexChange" class="filter-selector">
+          <el-option v-for="item in sexOptions" :key="item.value" :label="item.label" :value="item.value">
           </el-option>
         </el-select>
       </el-form-item>
@@ -39,33 +23,22 @@
     <div class="table-container">
       <el-table :data="tableData" style="width: 100%" :row-class-name="tableRowClassName">
         <!-- 表格列 -->
-        <el-table-column
-          prop="username"
-          label="名字"
-          width="80">
+        <el-table-column prop="username" label="名字" width="80">
           <template slot="header">
             <span>名字</span>
           </template>
         </el-table-column>
-        <el-table-column
-          prop="startAddress"
-          label="开始地点"
-          width="180">
+        <el-table-column prop="startAddress" label="开始地点" width="180">
           <template slot="header">
             <span>开始地点</span>
           </template>
         </el-table-column>
-        <el-table-column
-          prop="endAddress"
-          label="结束地点"
-          width="180">
+        <el-table-column prop="endAddress" label="结束地点" width="180">
           <template slot="header">
             <span>结束地点</span>
           </template>
         </el-table-column>
-        <el-table-column
-          prop="publishTime"
-          label="发布时间">
+        <el-table-column prop="publishTime" label="发布时间">
           <template slot="header">
             <span>发布时间</span>
             <el-button @click="handleSort('publish_time')" size="mini" type="text">
@@ -73,9 +46,7 @@
             </el-button>
           </template>
         </el-table-column>
-        <el-table-column
-          prop="reward"
-          label="报酬/元">
+        <el-table-column prop="reward" label="报酬/元">
           <template slot="header">
             <span>报酬/元</span>
             <el-button @click="handleSort('reward')" size="mini" type="text">
@@ -83,28 +54,18 @@
             </el-button>
           </template>
         </el-table-column>
-        <el-table-column
-          label="操作"
-          width="120">
+        <el-table-column label="操作" width="120">
           <template slot-scope="scope">
-            <el-button
-              @click="goToTaskDetail(scope.row.id)"
-              size="mini"
-              type="text">
+            <el-button @click="goToTaskDetail(scope.row.taskId)" size="mini" type="text">
               查看详情
             </el-button>
-            <p>{{ scope.row.id }}</p> <!-- 添加这一行用于调试 -->
+            <p>{{ scope.row.taskId }}</p> <!-- 添加这一行用于调试 -->
           </template>
         </el-table-column>
       </el-table>
 
-      <el-pagination
-        @current-change="handleCurrentChange"
-        :current-page="Filter.page"
-        :page-sizes="[5, 10, 15, 20]"
-        :page-size="10"
-        layout="total, prev, pager, next, jumper"
-        :total="total">
+      <el-pagination @current-change="handleCurrentChange" :current-page="Filter.page" :page-sizes="[5, 10, 15, 20]"
+        :page-size="10" layout="total, prev, pager, next, jumper" :total="total">
       </el-pagination>
     </div>
 
@@ -147,7 +108,7 @@ export default {
       this.fetchData();
     },
     fetchData() {
-      axios.post("/availableTask",  this.Filter )
+      axios.post("/availableTask", this.Filter)
         .then((res) => {
           this.tableData = res.data.records;
           this.total = res.data.total;
@@ -156,8 +117,8 @@ export default {
           console.error("请求失败:", error);
         });
     },
-    goToTaskDetail(id) {
-      this.$router.push({ path: '/TaskIfo', query: { id: id } });
+    goToTaskDetail(taskId) {
+      this.$router.push({ path: '/TaskIfo', query: { taskId: taskId } });
     }
   },
   created() {
@@ -174,6 +135,7 @@ export default {
         isDesc: true, // 是否降序
       },
       total: 0,
+      taskId: '',
       campusOptions: [
         { value: "", label: "全部" },
         { value: "A", label: "校区A" },
