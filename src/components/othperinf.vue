@@ -1,14 +1,11 @@
 <template>
     <div>
+        <img src="/imagine/title.png" alt="" width="50%">
     <div class="profile-container">
       <header class="profile-header">
         <h1>{{ User.username }}的个人主页</h1>
       </header>
       <section class="profile-content">
-        <div class="profile-item">
-          <label>真实姓名:</label>
-          <span>{{ User.realName }}</span>
-        </div>
         <div class="profile-item">
           <label>账号ID:</label>
           <span>{{ User.id }}</span>
@@ -22,10 +19,6 @@
           <span>{{ User.age }}</span>
         </div>
         <div class="profile-item">
-          <label>住址:</label>
-          <span>{{ User.address }}</span>
-        </div>
-        <div class="profile-item">
           <label>电话:</label>
           <span>{{ User.phone }}</span>
         </div>
@@ -36,14 +29,6 @@
         <div class="profile-item">
           <label>QQ:</label>
           <span>{{ User.qq }}</span>
-        </div>
-        <div class="profile-item">
-          <label>学号:</label>
-          <span>{{ User.stuId }}</span>
-        </div>
-        <div class="profile-item">
-          <label>余额:</label>
-          <span>{{ User.balance }}</span>
         </div>
         <div class="profile-item">
           <label>任务完成次数:</label>
@@ -114,25 +99,24 @@ import { Header } from 'element-ui';
 export default {
     methods: {
         getuser() {
-
+            setTimeout(
+                () => {
                     const jwt = localStorage.getItem('cqu-project-jwt')
                     console.log('[perinf组件]' + '获取到的jwt为' + jwt)
                     const config = { headers: { 'Authorization': jwt } }
-                    
-                    axios.get("/user", config)
+
+                    axios.get("/user/"+this.othperinfid,  config)
                         .then((res) => {
-                          console.log(config)
-                          console.log("getyer");
-                          
-                            console.log(res);
+                             console.log(res.data);
                             this.User=res.data.data;
-                            console.log(this.User);
+                            //console.log(res.data.data.realName);
                             
                         })
                         .catch((error) => {
                             console.error("请求失败:", error);
                         })
 
+                }, 500);
         }
     },
     created() {
@@ -146,19 +130,19 @@ export default {
                 sex:'',
                 age:'',
                 accCrtTime:'',
-                stuId:'',
+                
                 level:'',
                 likeCount:'',
-                realName:'',
+                
                 address:'',
-                balance:'',
+                
                 takeNum:'',
                 publishNum:'',
                 qq:'',
                 email:'',
                 phone:'',
                 finishNum:'',
-                realName:''
+                
             }
         };
     },

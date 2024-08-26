@@ -7,10 +7,10 @@
 
     <div v-if="isLogin">
       <h2>登录</h2>
-      <form>
+      <form @submit.prevent="handleLogin">
         <input type="text" v-model="loginData.username" placeholder="用户名" required />
         <input type="password" v-model="loginData.password" placeholder="密码" required />
-        <button type="submit" @click="handleLogin">登录</button>
+        <button type="submit">登录</button>
       </form>
     </div>
 
@@ -47,9 +47,6 @@ export default {
       // 处理登录逻辑
       console.log("登录数据: ", this.loginData);
       this.login();
-
-
-
     },
     handleRegister() {
       // 处理注册逻辑
@@ -59,29 +56,23 @@ export default {
     login() {
       axios.post("/login", this.loginData)
         .then((res) => {
-          console.log(res);
-          const jwt = res?.data?.msg//登陆时保存返回的jwt
-          console.log('登录后保存的jwt数据为' + jwt)
-          localStorage.setItem('cqu-project-jwt', jwt)
-          console.log('login函数被调用')
-          
-
+          console.log(res.data.msg);
+          const jwt = res?.data?.msg; // 登陆时保存返回的jwt
+          console.log('登录后保存的jwt数据为' + jwt);
+          localStorage.setItem('cqu-project-jwt', jwt);
+          console.log('login函数被调用');
+          console.log(localStorage.getItem('cqu-project-jwt'))
           if (jwt === '账号或密码错误!') {
-            return 
+            return;
           }
-          this.$router.push({ path: '/createTask' });
-
-
-
+          
+          this.$router.push({ path: '/Home' });
         })
         .catch((error) => {
           console.error("请求失败:", error);
         });
     }
-  },
-  created() {
-
-  },
+  }
 };
 </script>
 

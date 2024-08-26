@@ -1,8 +1,8 @@
 <template>
-  <div class="task-container">
-    <ul class="task-list">
-      <li v-for="item in tableData" :key="item.id" class="task-item">
-        <h2 class="task-title">{{ item.title }}</h2>
+    <div class="task-container">
+        <ul class="task-list">
+            <li v-for="item in tableData" :key="item.id" class="task-item">
+                <h2 class="task-title">{{ item.title }}</h2>
                 <div class="task-details">
                     <p><strong>描述：</strong>{{ item.description }}</p>
                     <hr class="divider" />
@@ -28,6 +28,17 @@
                     <p><strong>等级：</strong>{{ item.publisherLevel }}</p>
 
                 </div>
+                <hr class="divider" />
+                <div>
+                    <p><strong>接单人：</strong>{{ item.takerUsername }} <span class="user-id">(ID: {{
+                            item.takerId}})</span></p>
+                    <hr class="divider" />
+                    <p><strong>性别：</strong>{{ item.takerSex }}</p>
+                    <hr class="divider" />
+                    <p><strong>电话：</strong>{{ item.takerPhone }}</p>
+                    <hr class="divider" />
+                    <p><strong>等级：</strong>{{ item.takerLevel }}</p>
+                </div>
                 <div class="task-meta">
                     <p><strong>发布时间：</strong>{{ formatDateTime(item.publishTime) }}</p>
                     <hr class="divider" />
@@ -36,131 +47,149 @@
                     <p><strong>报酬：</strong><span class="reward">{{ item.reward }}</span></p>
                     <hr class="divider" />
                 </div>
-        <div class="comments-section">
-          <h3>评论区</h3>
-          <div class="comments-list">
-            <div v-for="comment in comments" :key="comment.id" :class="['comment-item', { reply: comment.parentId !== 0 }]">
+                <div class="comments-section">
+                    <h3>评论区</h3>
+                    <div class="comments-list">
+                        <div v-for="comment in comments" :key="comment.id"
+                            :class="['comment-item', { reply: comment.parentId !== 0 }]">
 
-              <p><strong>{{ comment.publisherUsername }}:</strong> {{ comment.content }}</p>
-              <div class="comment-footer">
-                <span class="timestamp">{{ formatDateTime(comment.publishTime) }}</span>
-                <button @click="replyToComment(comment.id)" class="reply-btn">回复</button>
-                <button @click="deleteComment(comment.id)" class="delete-btn">Delete</button>
-              </div>
-            </div>
-          </div>
-          <div class="comment-form">
-            <textarea v-model="newComment" placeholder="添加你的评论..."></textarea>
-            <button @click="postComment">提交评论</button>
-          </div>
-        </div>
-        <div v-if="showDialog" class="reply-dialog">
-          <div class="dialog-content">
-            <h4>回复评论</h4>
-            <textarea v-model="replyContent" placeholder="输入回复内容..."></textarea>
-            <div class="dialog-actions">
-              <button @click="submitReply">提交</button>
-              <button @click="hideReplyDialog">取消</button>
-            </div>
-          </div>
-        </div>
-
-      </li>
-    </ul>
-    <button class="button">接单</button>
-  </div>
+                            <p><strong>{{ comment.publisherUsername }}:</strong> {{ comment.content }}</p>
+                            <div class="comment-footer">
+                                <span class="timestamp">{{ formatDateTime(comment.publishTime) }}</span>
+                                <button @click="replyToComment(comment.id)" class="reply-btn">回复</button>
+                                <button @click="deleteComment(comment.id)" class="delete-btn">Delete</button>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="comment-form">
+                        <textarea v-model="newComment" placeholder="添加你的评论..."></textarea>
+                        <button @click="postComment">提交评论</button>
+                    </div>
+                </div>
+                <div v-if="showDialog" class="reply-dialog">
+                    <div class="dialog-content">
+                        <h4>回复评论</h4>
+                        <textarea v-model="replyContent" placeholder="输入回复内容..."></textarea>
+                        <div class="dialog-actions">
+                            <button @click="submitReply">提交</button>
+                            <button @click="hideReplyDialog">取消</button>
+                        </div>
+                    </div>
+                </div>
+            </li>
+        </ul>
+    </div>
 </template>
 
 <style scoped>
 .task-container {
-  max-width: 900px;
-  margin: 0 auto;
-  padding: 20px;
-  background-color: #f0f4f8;
-  border-radius: 15px;
-  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.1);
+    max-width: 900px;
+    margin: 0 auto;
+    padding: 20px;
+    background-color: #f9f9f9;
+    border-radius: 10px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
 }
 
 .task-list {
-  list-style: none;
-  padding: 0;
+    list-style: none;
+    padding: 0;
 }
 
 .task-item {
-  margin-bottom: 20px;
-  padding: 20px;
-  border: 1px solid #ddd;
-  border-radius: 10px;
-  background-color: #ffffff;
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.05);
-  transition: transform 0.3s ease, box-shadow 0.3s ease;
+    margin-bottom: 20px;
+    padding: 20px;
+    border: 1px solid #e0e0e0;
+    border-radius: 8px;
+    background-color: #ffffff;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
 }
 
 .task-item:hover {
-  transform: translateY(-5px);
-  box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
+    transform: translateY(-4px);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
 }
 
 .task-title {
-  font-size: 26px;
-  margin-bottom: 15px;
-  color: #2c3e50;
-  border-bottom: 2px solid #007bff;
-  padding-bottom: 5px;
+    font-size: 24px;
+    margin-bottom: 10px;
+    color: #333;
+    border-bottom: 2px solid #007bff;
+    padding-bottom: 5px;
 }
 
 .task-details p {
-  margin: 10px 0;
-  font-size: 16px;
-  color: #34495e;
+    margin: 8px 0;
+    font-size: 16px;
+    color: #555;
+}
+
+.divider {
+    border: none;
+    border-top: 1px solid #ddd;
+    margin: 10px 0;
 }
 
 .state-pending {
-  color: #e67e22;
+    color: #e67e22;
 }
 
 .state-completed {
-  color: #27ae60;
+    color: #27ae60;
 }
 
 .state-cancelled {
-  color: #c0392b;
+    color: #c0392b;
 }
 
 .info-group {
-  margin-bottom: 20px;
-  padding: 15px;
-  background-color: #ecf0f1;
-  border-radius: 5px;
-  box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.05);
+    margin-bottom: 20px;
+    padding: 10px;
+    background-color: #f5f5f5;
+    border-radius: 4px;
+    box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.05);
 }
 
 .info-group p {
-  margin: 8px 0;
+    margin: 6px 0;
 }
 
 .user-id {
-  color: #7f8c8d;
-  font-size: 14px;
+    color: #7f8c8d;
+    font-size: 14px;
 }
 
 .task-meta {
-  margin-top: 20px;
-  padding-top: 15px;
-  border-top: 1px solid #bdc3c7;
+    margin-top: 20px;
+    padding-top: 10px;
+    border-top: 1px solid #d0d0d0;
 }
 
 .task-meta p {
-  font-size: 14px;
-  color: #7f8c8d;
+    font-size: 14px;
+    color: #7f8c8d;
 }
 
 .reward {
-  font-size: 20px;
-  color: #e74c3c;
-  font-weight: bold;
+    font-size: 18px;
+    color: #e74c3c;
+    font-weight: bold;
 }
 
+.delete-button {
+    color: #c0392b;
+    font-size: 14px;
+}
+
+.popover-buttons {
+    text-align: right;
+    margin-top: 10px;
+}
+
+.popover-buttons .el-button {
+    margin-left: 10px;
+}
 .button {
   display: block;
   width: 100%;
@@ -346,9 +375,9 @@
 import axios from "axios";
 
 export default {
-  data() {
-    return {
-      tableData: [],
+    data() {
+        return {
+           tableData: [],
       sites: [2, 3, 4],
       title: '',
       myId: "3",
@@ -366,17 +395,16 @@ export default {
       showDialog: false,
       replyContent: '',
       replyToCommentId: null,
-    };
-  },
-  mounted() {
+        };
+    },
+    mounted() {
     this.myId = this.$route.query.taskId;
-
     this.getInfo();
     this.getComments();
 
   },
-  methods: {
-    formatDateTime(timestamp) {
+    methods: {
+        formatDateTime(timestamp) {
             if (!timestamp) return '';
             const date = new Date(timestamp);
             const Y = date.getFullYear();
@@ -387,40 +415,33 @@ export default {
             const s = ('0' + date.getSeconds()).slice(-2);
             return `${Y}-${M}-${D} ${h}:${m}:${s}`;
         },
-    getStateClass(state) {
-      if (state === 'Pending') {
-        return 'state-pending';
-      } else if (state === 'Completed') {
-        return 'state-completed';
-      } else if (state === 'Cancelled') {
-        return 'state-cancelled';
-      }
-      return '';
-    },
-    getInfo() {
-      // axios.get('http://localhost:8088/task/' + this.myId).then((response) => {
-      //   this.title = response.data.title;
-      //   this.tableData = response.data;
-      // });
-      setTimeout(
-        () => {
-          const jwt = localStorage.getItem('cqu-project-jwt')
-          console.log('[TaskInformation组件]' + '获取到的jwt为' + jwt)
-          const config = { headers: { 'Authorization': jwt } }
+        getStateClass(state) {
+            return {
+                'state-pending': state === 'Pending',
+                'state-completed': state === 'Completed',
+                'state-cancelled': state === 'Cancelled'
+            };
+        },
+        getInfo() {
+            setTimeout(
+                () => {
+                    const jwt = localStorage.getItem('cqu-project-jwt')
+                    console.log('[TaskInformation组件]' + '获取到的jwt为' + jwt)
+                    const config = { headers: { 'Authorization': jwt } }
 
-          axios.get('http://localhost:8088/task/' + this.myId, config)
-            .then((response) => {
-              // console.log(response);
-              this.title = response.data.title;
-              this.tableData = response.data;
-            })
-            .catch((error) => {
-              console.error("请求失败:", error);
-            })
+                    axios.get('http://localhost:8088/task/' + this.myId, config)
+                        .then((response) => {
+                            console.log(response);
+                            this.title = response.data.title;
+                            this.tableData = response.data;
+                        })
+                        .catch((error) => {
+                            console.error("请求失败:", error);
+                        })
 
-        }, 500);
-    },
-    getComments() {
+                }, 500);
+        },
+        getComments() {
       // 你可以替换成实际的 API 请求
       axios.get('http://localhost:8088/task/' + this.myId + '/comment/' + this.page)
         .then((response) => {
@@ -518,9 +539,7 @@ export default {
         });
       this.getComments();
     }
-  },
+    },
 
-
-
-}
+};
 </script>

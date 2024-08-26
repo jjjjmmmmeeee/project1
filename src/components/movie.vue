@@ -66,7 +66,6 @@
             <el-button @click="goToTaskDetail(scope.row.taskId)" size="mini" type="text">
               查看详情
             </el-button>
-            <p>{{ scope.row.taskId }}</p> <!-- 添加这一行用于调试 -->
           </template>
         </el-table-column>
       </el-table>
@@ -135,7 +134,7 @@ export default {
         });
     },
     goToTaskDetail(taskId) {
-      this.$router.push({ path: '/TaskIfo', query: { taskId: taskId } });
+      this.$router.push({ path: '/TaskInformation', query: { taskId: taskId } });
     },
     handleSearch() {
       this.Filter.page = 1; // 每次搜索时重置页码为1
