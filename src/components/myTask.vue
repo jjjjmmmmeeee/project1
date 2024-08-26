@@ -8,7 +8,15 @@
             </el-option>
           </el-select>
         </el-form-item>
-      </el-form>
+ 
+       <!-- 搜索框 -->
+       <el-form-item label="搜索关键词：">
+        <el-input v-model="MyTaskDTO.keyword" placeholder="标题/接单人/地点"></el-input>
+      </el-form-item>
+      <el-form-item>
+        <el-button type="primary" @click="handleSearch">搜索</el-button>
+      </el-form-item>
+    </el-form>
       <!-- 右边表格和分页 -->
       <div class="table-container">
         <el-table :data="tableData" style="width: 100%" :row-class-name="tableRowClassName">
@@ -18,6 +26,8 @@
               <span>任务标题</span>
             </template>
           </el-table-column>
+
+          <!-- 格式化后的发布时间列 -->
           <el-table-column prop="publishTime" label="发布时间">
             <template slot="header">
               <span>发布时间</span>
@@ -25,7 +35,31 @@
                 <i :class="['el-icon-d-caret']"></i>
               </el-button>
             </template>
+            <template slot-scope="scope">
+            {{ formatDateTime(scope.row.publishTime) }}
+          </template>
           </el-table-column>
+          
+          <el-table-column prop="username" label="接单人">
+            <template slot="header">
+              <span>接单人</span>
+            </template>
+          </el-table-column>
+
+        <!-- 格式化后的接取时间列 -->
+        <el-table-column label="接取时间">
+          <template slot-scope="scope">
+            {{ formatDateTime(scope.row.takeTime) }}
+          </template>
+        </el-table-column>
+
+          <!-- 格式化后的完成时间列 -->
+        <el-table-column label="完成时间">
+          <template slot-scope="scope">
+            {{ formatDateTime(scope.row.finishTime) }}
+          </template>
+        </el-table-column>
+
           <el-table-column label="操作" width="120">
             <template slot-scope="scope">
               <el-button @click="goToTaskDetail(scope.row.taskId)" size="mini" type="text">
@@ -46,6 +80,19 @@
   
   export default {
     methods: {
+      formatDateTime(timestamp) {
+    if (!timestamp) {
+      return '';
+    }
+    const date = new Date(timestamp);
+    const Y = date.getFullYear();
+    const M = ('0' + (date.getMonth() + 1)).slice(-2);
+    const D = ('0' + date.getDate()).slice(-2);
+    const h = ('0' + date.getHours()).slice(-2);
+    const m = ('0' + date.getMinutes()).slice(-2);
+    const s = ('0' + date.getSeconds()).slice(-2);
+    return `${Y}-${M}-${D} ${h}:${m}:${s}`;
+  },
       tableRowClassName({ row, rowIndex }) {
         if (rowIndex === 1) {
           return "warning-row";
@@ -91,13 +138,38 @@
 
                 }, 500);
         },
+        searchtasks() {
+            setTimeout(
+                () => {
+                    const jwt = localStorage.getItem('cqu-project-jwt')
+                    console.log('[myTask组件]' + '获取到的jwt为' + jwt)
+                    const config = { headers: { 'Authorization': jwt } }
+
+                    axios.post("/myPublishingTask/search", this.MyTaskDTO, config)
+                        .then((res) => {
+                            console.log(res);
+                            this.tableData=res.data.records
+                            this.total=res.data.total
+                        })
+                        .catch((error) => {
+                            console.error("请求失败:", error);
+                        })
+
+                }, 500);
+        },
       goToTaskDetail(taskId) {
         this.$router.push({ path: '/TaskIfo', query: { taskId: taskId } });
-      }
+      },
+      handleSearch() {
+      this.MyTaskDTO.page = 1; // 每次搜索时重置页码为1
+      this.searchtasks();
+    },
     },
     created() {
       this.gettasks();
+      this.searchtasks();
     },
+    
     data() {
       return {
         tableData: [],
@@ -138,7 +210,10 @@
     margin-bottom: 20px;
     width: 200px;
   }
-  
+  .search-input {
+  margin-bottom: 20px;
+  width: 200px;
+}
   .table-container {
     flex-grow: 1;
   }

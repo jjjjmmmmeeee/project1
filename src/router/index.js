@@ -8,6 +8,7 @@ import Hello from "@/components/Hello.vue";
 import Login from "@/components/Login.vue";
 import MyTask from "@/components/myTask.vue";
 import Perinf from "@/components/perinf.vue";
+import CreateTask from "@/components/createTask.vue";
 Vue.use(VueRouter)
 
 const router =new VueRouter({
@@ -17,7 +18,8 @@ const router =new VueRouter({
         {path:'/Hello',component: Hello},
         {path:'/availableTask',component: movie},
         {path:'/mytask',component:MyTask},
-        {path:'/perinf',component:Perinf}
+        {path:'/perinf',component:Perinf},
+        {path:'/createTask',component:CreateTask}
     ]
 })
 export default router

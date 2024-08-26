@@ -67,9 +67,9 @@ export default {
           
 
           if (jwt === '账号或密码错误!') {
-            return
+            return 
           }
-          this.$router.push({ path: '/mytask' });
+          this.$router.push({ path: '/createTask' });
 
 
 

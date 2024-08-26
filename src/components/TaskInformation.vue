@@ -179,10 +179,27 @@ export default {
       return '';
     },
     getInfo() {
-      axios.get('http://localhost:8088/taskInformation/' + this.myId).then((response) => {
-        this.title = response.data.taskInformation[0].title;
-        this.tableData = response.data.taskInformation;
-      });
+      // axios.get('http://localhost:8088/task/' + this.myId).then((response) => {
+      //   this.title = response.data.title;
+      //   this.tableData = response.data;
+      // });
+      setTimeout(
+                () => {
+                    const jwt = localStorage.getItem('cqu-project-jwt')
+                    console.log('[TaskInformation组件]' + '获取到的jwt为' + jwt)
+                    const config = { headers: { 'Authorization': jwt } }
+
+                    axios.get('http://localhost:8088/task/' + this.myId, config)
+                        .then((response) => {
+                            console.log(response);
+                          this.title = response.data.title;
+                           this.tableData = response.data;
+                        })
+                        .catch((error) => {
+                            console.error("请求失败:", error);
+                        })
+
+                }, 500);
     }
   }
 };

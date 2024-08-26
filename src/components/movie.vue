@@ -17,6 +17,13 @@
           </el-option>
         </el-select>
       </el-form-item>
+      <!-- 搜索框 -->
+      <el-form-item label="搜索关键词：">
+        <el-input v-model="Filter.keyword" placeholder="标题/发布人/地点"></el-input>
+      </el-form-item>
+      <el-form-item>
+        <el-button type="primary" @click="handleSearch">搜索</el-button>
+      </el-form-item>
     </el-form>
 
     <!-- 右边表格和分页 -->
@@ -117,12 +124,27 @@ export default {
           console.error("请求失败:", error);
         });
     },
+    SeacherData() {
+      axios.post("/availableTask/search", this.Filter)
+        .then((res) => {
+          this.tableData = res.data.records;
+          this.total = res.data.total;
+        })
+        .catch((error) => {
+          console.error("请求失败:", error);
+        });
+    },
     goToTaskDetail(taskId) {
       this.$router.push({ path: '/TaskIfo', query: { taskId: taskId } });
-    }
+    },
+    handleSearch() {
+      this.Filter.page = 1; // 每次搜索时重置页码为1
+      this.SeacherData();
+    },
   },
   created() {
     this.fetchData();
+    this.SeacherData();
   },
   data() {
     return {
@@ -133,6 +155,7 @@ export default {
         sortOrder: "reward", // 排序属性
         page: 1,
         isDesc: true, // 是否降序
+        keyword:""
       },
       total: 0,
       taskId: '',
