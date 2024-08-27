@@ -1,77 +1,85 @@
 <template>
-  <div class="container">
-    <el-form class="filters">
-      <!-- 任务状态选择器 -->
-      <el-form-item label="状态：">
-        <el-select v-model="MyTaskDTO.state" placeholder="请选择想要查询的任务状态" @change="handleSataeChange"
-          class="filter-selector">
-          <el-option v-for="item in StateOptions" :key="item.value" :label="item.label" :value="item.value">
-          </el-option>
-        </el-select>
-      </el-form-item>
+  <div>
+    <img src="/image/title.png" alt="" width="100%">
+    <div class="container">
+      <div class="create-task-container">
+        <el-button @click="goToCreateTask" icon="el-icon-plus" type="primary" class="create-task-button">
+          新建任务
+        </el-button>
+      </div>
+      <el-form class="filters">
+        <!-- 任务状态选择器 -->
+        <el-form-item label="状态：">
+          <el-select v-model="MyTaskDTO.state" placeholder="请选择想要查询的任务状态" @change="handleSataeChange"
+            class="filter-selector">
+            <el-option v-for="item in StateOptions" :key="item.value" :label="item.label" :value="item.value">
+            </el-option>
+          </el-select>
+        </el-form-item>
 
-      <!-- 搜索框 -->
-      <el-form-item label="搜索关键词：">
-        <el-input v-model="MyTaskDTO.keyword" placeholder="标题/接单人/地点"></el-input>
-      </el-form-item>
-      <el-form-item>
-        <el-button type="primary" @click="handleSearch">搜索</el-button>
-      </el-form-item>
-    </el-form>
-    <!-- 右边表格和分页 -->
-    <div class="table-container">
-      <el-table :data="tableData" style="width: 100%" :row-class-name="tableRowClassName">
-        <!-- 表格列 -->
-        <el-table-column prop="title" label="任务标题" width="80">
-          <template slot="header">
-            <span>任务标题</span>
-          </template>
-        </el-table-column>
+        <!-- 搜索框 -->
+        <el-form-item label="搜索关键词：">
+          <el-input v-model="MyTaskDTO.keyword" placeholder="标题/接单人/地点"></el-input>
+        </el-form-item>
+        <el-form-item>
+          <el-button type="primary" @click="handleSearch">搜索</el-button>
+        </el-form-item>
+      </el-form>
+      <!-- 右边表格和分页 -->
+      <div class="table-container">
+        <el-table :data="tableData" style="width: 100%" :row-class-name="tableRowClassName">
+          <!-- 表格列 -->
+          <el-table-column prop="title" label="任务标题" width="80">
+            <template slot="header">
+              <span>任务标题</span>
+            </template>
+          </el-table-column>
 
-        <!-- 格式化后的发布时间列 -->
-        <el-table-column prop="publishTime" label="发布时间">
-          <template slot="header">
-            <span>发布时间</span>
-            <el-button @click="handleSort('publish_time')" size="mini" type="text">
-              <i :class="['el-icon-d-caret']"></i>
-            </el-button>
-          </template>
-          <template slot-scope="scope">
-            {{ formatDateTime(scope.row.publishTime) }}
-          </template>
-        </el-table-column>
+          <!-- 格式化后的发布时间列 -->
+          <el-table-column prop="publishTime" label="发布时间">
+            <template slot="header">
+              <span>发布时间</span>
+              <el-button @click="handleSort('publish_time')" size="mini" type="text">
+                <i :class="['el-icon-d-caret']"></i>
+              </el-button>
+            </template>
+            <template slot-scope="scope">
+              {{ formatDateTime(scope.row.publishTime) }}
+            </template>
+          </el-table-column>
 
-        <el-table-column prop="username" label="接单人">
-          <template slot="header">
-            <span>接单人</span>
-          </template>
-        </el-table-column>
+          <el-table-column prop="username" label="接单人">
+            <template slot="header">
+              <span>接单人</span>
+            </template>
+          </el-table-column>
 
-        <!-- 格式化后的接取时间列 -->
-        <el-table-column label="接取时间">
-          <template slot-scope="scope">
-            {{ formatDateTime(scope.row.takeTime) }}
-          </template>
-        </el-table-column>
+          <!-- 格式化后的接取时间列 -->
+          <el-table-column label="接取时间">
+            <template slot-scope="scope">
+              {{ formatDateTime(scope.row.takeTime) }}
+            </template>
+          </el-table-column>
 
-        <!-- 格式化后的完成时间列 -->
-        <el-table-column label="完成时间">
-          <template slot-scope="scope">
-            {{ formatDateTime(scope.row.finishTime) }}
-          </template>
-        </el-table-column>
+          <!-- 格式化后的完成时间列 -->
+          <el-table-column label="完成时间">
+            <template slot-scope="scope">
+              {{ formatDateTime(scope.row.finishTime) }}
+            </template>
+          </el-table-column>
 
-        <el-table-column label="操作" width="120">
-          <template slot-scope="scope">
-            <el-button @click="goToTaskDetail(scope.row.taskId)" size="mini" type="text">
-              查看详情
-            </el-button>
-          </template>
-        </el-table-column>
-      </el-table>
-      <el-pagination @current-change="handleCurrentChange" :current-page="MyTaskDTO.page" :page-sizes="[5, 10, 15, 20]"
-        :page-size="10" layout="total, prev, pager, next, jumper" :total="total">
-      </el-pagination>
+          <el-table-column label="操作" width="120">
+            <template slot-scope="scope">
+              <el-button @click="goToTaskDetail(scope.row.taskId)" size="mini" type="text">
+                查看详情
+              </el-button>
+            </template>
+          </el-table-column>
+        </el-table>
+        <el-pagination @current-change="handleCurrentChange" :current-page="MyTaskDTO.page"
+          :page-sizes="[5, 10, 15, 20]" :page-size="10" layout="total, prev, pager, next, jumper" :total="total">
+        </el-pagination>
+      </div>
     </div>
   </div>
 </template>
@@ -139,6 +147,9 @@ export default {
 
         }, 500);
     },
+    goToCreateTask(){
+      this.$router.push('/createTask');
+    },
     searchtasks() {
       setTimeout(
         () => {
@@ -175,10 +186,10 @@ export default {
         case 'timeout':
           path = '/taskDetailTimeout';
           break;
-          case 'unconfirmed':
+        case 'unconfirmed':
           path = '/taskDetailunconfirmed';
           break;
-       
+
       }
 
       // 跳转到对应的详情页
@@ -211,7 +222,7 @@ export default {
         { value: "incomplete", label: "进行中" },
         { value: "complete", label: "已完成" },
         { value: "timeout", label: "已超时" },
-        {value:"unconfirmed",label:"未确认"}
+        { value: "unconfirmed", label: "未确认" }
       ],
 
     };

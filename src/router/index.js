@@ -4,7 +4,6 @@ import movie from "../components/movie.vue";
 import TaskInformation from '../components/TaskInformation';
 import movie1 from "../components/movie1.vue";
 import App from "@/App.vue";
-import Hello from "@/components/Hello.vue";
 import Login from "@/components/Login.vue";
 import MyTask from "@/components/myTask.vue";
 import Perinf from "@/components/perinf.vue";
@@ -23,7 +22,6 @@ const router =new VueRouter({
         {path:'/',component: Login},
         {path:'/Home',component:Home},
         {path:'/TaskIfo',component: TaskInformation},
-        {path:'/Hello',component: Hello},
         {path:'/availableTask',component: movie},
         {path:'/mytask',component:MyTask},
         {path:'/perinf',component:Perinf},

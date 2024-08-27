@@ -1,4 +1,6 @@
 <template>
+  <div>
+    <img src="/image/title.png" alt="" width="100%">
     <div class="container">
       <el-form class="filters">
         <!-- 任务状态选择器 -->
@@ -61,6 +63,7 @@
         </el-pagination>
       </div>
     </div>
+  </div>
   </template>
   
   <script>
