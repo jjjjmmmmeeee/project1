@@ -1,59 +1,32 @@
 <template>
-    <div>
-        <img src="/imagine/title.png" alt="" width="50%">
-    <div class="profile-container">
-      <header class="profile-header">
-        <h1>{{ User.username }}的个人主页</h1>
-      </header>
-      <section class="profile-content">
-        <div class="profile-item">
-          <label>账号ID:</label>
-          <span>{{ User.id }}</span>
-        </div>
-        <div class="profile-item">
-          <label>性别:</label>
-          <span>{{ User.sex }}</span>
-        </div>
-        <div class="profile-item">
-          <label>年龄:</label>
-          <span>{{ User.age }}</span>
-        </div>
-        <div class="profile-item">
-          <label>电话:</label>
-          <span>{{ User.phone }}</span>
-        </div>
-        <div class="profile-item">
-          <label>邮箱:</label>
-          <span>{{ User.email }}</span>
-        </div>
-        <div class="profile-item">
-          <label>QQ:</label>
-          <span>{{ User.qq }}</span>
-        </div>
-        <div class="profile-item">
-          <label>任务完成次数:</label>
-          <span>{{ User.finishNumNum }}</span>
-        </div>
-        <div class="profile-item">
-          <label>接取任务次数:</label>
-          <span>{{ User.takeNum }}</span>
-        </div>
-        <div class="profile-item">
-          <label>发布帖子总数:</label>
-          <span>{{ User.publishNum }}</span>
-        </div>
-        <div class="profile-item">
-          <label>点赞数:</label>
-          <span>{{ User.likeCount }}</span>
-        </div>
-        <div class="profile-item">
-          <label>等级:</label>
-          <span>{{ User.level }}</span>
-        </div>
-      </section>
-    </div>
-</div>
-  </template>
+  <div class="profile-container">
+    <header class="profile-header">
+      <!-- 显示头像，并支持点击上传新头像 -->
+      <div class="avatar-container">
+        <el-avatar :size="60" :src="avatarUrl" @error="errorHandler">
+          <img src= />
+        </el-avatar>
+      </div>
+      <h5 class="signature">{{ User.username }}的签名：{{ User.signature }}</h5>
+    </header>
+    <section class="profile-content">
+      <!-- 展示用户的详细信息 -->
+      <div class="profile-item" v-for="(value, key) in userInfo" :key="key">
+        <label>{{ key }}:</label>
+        <span>{{ value }}</span>
+      </div>
+    </section>
+    <section class="photo-wall">
+      <h3>照片墙</h3>
+      <div class="photo-wall-container">
+        <el-image v-for="photo in photoWall" :key="photo.id" :src="photo.photoPath" :preview-src-list="photoPaths"
+          class="photo-item"></el-image>
+      </div>
+    </section>
+  </div>
+
+</template>
+
 <style scoped>
 .profile-container {
   max-width: 800px;
@@ -63,88 +36,159 @@
   border-radius: 8px;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
+
 .profile-header {
+  position: relative;
   border-bottom: 2px solid #eee;
   padding-bottom: 10px;
   margin-bottom: 20px;
+  display: flex;
+  align-items: center;
 }
+
+.avatar-container {
+  position: relative;
+}
+
+.signature {
+  position: absolute;
+  bottom: 0px;
+  font-size: 0.8em;
+  color: gray;
+  margin-left: 10%;
+}
+
 .profile-header h1 {
-  margin: 0;
+  margin-left: 15px;
   font-size: 2em;
 }
+
+
+
 .profile-content {
   display: flex;
   flex-direction: column;
 }
+
 .profile-item {
   display: flex;
   justify-content: space-between;
   padding: 10px 0;
   border-bottom: 1px solid #eee;
 }
+
 .profile-item:last-child {
   border-bottom: none;
 }
+
 .profile-item label {
   font-weight: bold;
 }
+
 .profile-item span {
   color: #666;
 }
+
+.photo-wall {
+  margin-top: 30px;
+}
+
+.photo-wall-container {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.photo-item {
+  width: 260px;
+  height: 260px;
+  object-fit: cover;
+  border-radius: 8px;
+  cursor: pointer;
+}
+
+
 </style>
+
+
 <script>
 import axios from 'axios';
-import { Header } from 'element-ui';
 
 export default {
-    methods: {
-        getuser() {
-            setTimeout(
-                () => {
-                    const jwt = localStorage.getItem('cqu-project-jwt')
-                    console.log('[perinf组件]' + '获取到的jwt为' + jwt)
-                    const config = { headers: { 'Authorization': jwt } }
+  data() {
+    return {
+      User: {},
+      avatarUrl: '',
+      userInfo: {},
+      photoWall: [], // 照片墙数据
+      photoPaths: [], // 用于预览的图片路径数组
+      userId:'1'
+     
+    };
+  },
+  methods: {
+    getuser() {
+      const jwt = localStorage.getItem('cqu-project-jwt');
+      const config = { headers: { 'Authorization': jwt } };
 
-                    axios.get("/user/"+this.othperinfid,  config)
-                        .then((res) => {
-                             console.log(res.data);
-                            this.User=res.data.data;
-                            //console.log(res.data.data.realName);
-                            
-                        })
-                        .catch((error) => {
-                            console.error("请求失败:", error);
-                        })
+      axios.get("/user/"+this.userId, config)
+        .then((res) => {
+          console.log(res);
+          
+          this.User = res.data[0];
+          this.avatarUrl = "http://localhost:8088" + res.data[0].avatarPath
+          console.log(this.User);
 
-                }, 500);
-        }
+          this.populateUserInfo();
+        })
+        .catch((error) => {
+          console.error("请求失败:", error);
+        });
     },
-    created() {
-        this.getuser();
+
+    populateUserInfo() {
+      this.userInfo = {
+        账号ID: this.User.id,
+        用户名: this.User.username,
+        性别: this.User.sex,
+        年龄: this.User.age,
+        学号: this.User.stuId,
+        经验:this.User.exp,
+        等级: this.User.level,
+        点赞数: this.User.likeCount,
+        // 发布任务次数: this.User.PublishNumNum,
+        QQ: this.User.qq,
+        邮箱: this.User.email,
+        电话: this.User.phone,
+        
+        
+      };
     },
-    data() {
-        return {
-            User: {
-                id:'',
-                username:'',
-                sex:'',
-                age:'',
-                accCrtTime:'',
-                
-                level:'',
-                likeCount:'',
-                
-                address:'',
-                
-                takeNum:'',
-                publishNum:'',
-                qq:'',
-                email:'',
-                phone:'',
-                finishNum:'',
-                
-            }
-        };
+    errorHandler() {
+      this.avatarUrl = 'path-to-default-avatar.jpg'; // 设置默认头像
     },
+    getPhotoWall() {
+      const jwt = localStorage.getItem('cqu-project-jwt');
+      const config = { headers: { 'Authorization': jwt } };
+
+      axios.get('/user/'+this.userId+'/photowall', config)
+        .then((res) => {
+          this.photoWall = res.data.data.map(photo => ({
+            id: photo.id,
+            userId: photo.userId,
+            photoPath: `http://localhost:8088${photo.photoPath}`
+          }));
+          this.photoPaths = this.photoWall.map(photo => photo.photoPath); // 提取所有图片路径用于预览
+        })
+        .catch((error) => {
+          console.error('请求照片墙数据失败:', error);
+        });
+    },
+  },
+  created() {
+    this.userId = this.$route.query.userId;
+    this.getuser();
+    this.getPhotoWall();
+  }
 }
 </script>

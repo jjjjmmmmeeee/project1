@@ -1,4 +1,5 @@
 <template>
+
     <div class="task-container">
         <ul class="task-list">
             <li v-for="item in tableData" :key="item.id" class="task-item">
@@ -28,6 +29,17 @@
                     <p><strong>等级：</strong>{{ item.publisherLevel }}</p>
 
                 </div>
+                <hr class="divider" />
+                <div>
+                    <p><strong>接单人：</strong>{{ item.takerUsername }} <span class="user-id">(ID: {{
+                        item.takerId }})</span></p>
+                    <hr class="divider" />
+                    <p><strong>性别：</strong>{{ item.takerSex }}</p>
+                    <hr class="divider" />
+                    <p><strong>电话：</strong>{{ item.takerPhone }}</p>
+                    <hr class="divider" />
+                    <p><strong>等级：</strong>{{ item.takerLevel }}</p>
+                </div>
                 <div class="task-meta">
                     <p><strong>发布时间：</strong>{{ formatDateTime(item.publishTime) }}</p>
                     <hr class="divider" />
@@ -49,7 +61,7 @@
                                 {{ comment.content }}
                             </p>
                             <div class="comment-footer">
-                                <span class="timestamp">{{ formatDateTime(comment.publishTime )}}</span>
+                                <span class="timestamp">{{ formatDateTime(comment.publishTime) }}</span>
                                 <button @click="replyToComment(comment.id)" class="reply-btn">回复</button>
                                 <button @click="deleteComment(comment.id)" class="delete-btn">Delete</button>
                             </div>
@@ -72,7 +84,17 @@
                 </div>
             </li>
         </ul>
-        <el-popover placement="top" width="200" v-model="visible">
+        <div class="action-buttons">
+            <!-- <el-popover placement="top" width="200" v-model="visible">
+                <p>该任务已被接受，取消将扣除你5点经验值，是否确定取消？</p>
+                <div class="popover-buttons">
+                    <el-button size="mini" type="text" @click="no">取消</el-button>
+                    <el-button type="danger" size="mini" @click="yes">确定</el-button>
+                </div>
+                <el-button slot="reference" class="delete-button">取消任务</el-button>
+            </el-popover> -->
+            <el-button type="primary" @click="confirmAction">请求确认</el-button>
+            <el-popover placement="top" width="200" v-model="visible">
             <p>是否确定删除？</p>
             <div class="popover-buttons">
                 <el-button size="mini" type="text" @click="no">取消</el-button>
@@ -80,6 +102,7 @@
             </div>
             <el-button slot="reference" class="delete-button">删除任务</el-button>
         </el-popover>
+        </div>
     </div>
 </template>
 
@@ -377,6 +400,36 @@
     margin-left: 20px;
     /* 向右移动以突出显示 */
 }
+
+.action-buttons {
+    display: flex;
+    justify-content: space-between;
+    /* 使按钮水平分布并自动分配空间 */
+    margin-top: 20px;
+    /* 添加顶部边距 */
+}
+
+.popover-buttons {
+    display: flex;
+    justify-content: flex-end;
+    margin-top: 10px;
+}
+
+.popover-buttons .el-button {
+    margin-left: 5px;
+    /* 减少按钮之间的间距 */
+}
+
+.delete-button {
+    color: #c0392b;
+    font-size: 14px;
+}
+
+.confirm-button {
+    background-color: #3498db;
+    color: white;
+    font-size: 14px;
+}
 </style>
 
 <script>
@@ -429,7 +482,7 @@ export default {
             this.visible = false;
             this.connectwithback();
             alert('删除成功')
-            this.$router.push({ path: '/mytask' });
+            this.$router.push({ path: '/myTakingtask' });
         },
         no() {
             this.visible = false;
@@ -473,6 +526,34 @@ export default {
                         })
 
                 }, 500);
+        },
+        cancelAction() {
+            const jwt = localStorage.getItem('cqu-project-jwt');
+            const config = { headers: { 'Authorization': jwt } };
+
+            axios.post('http://localhost:8088/task/' + this.myId + '/delete', {}, config)
+                .then((response) => {
+                    console.log(response);
+                    alert('取消请求成功');
+                    this.$router.push({ path: '/myTakingtasks' }); // 根据实际情况修改路径
+                })
+                .catch((error) => {
+                    console.error("请求失败:", error);
+                });
+        },
+        confirmAction() {
+            const jwt = localStorage.getItem('cqu-project-jwt');
+            const config = { headers: { 'Authorization': jwt } };
+
+            axios.post('http://localhost:8088/task/' + this.myId + '/requestConfirm', {}, config)
+                .then((response) => {
+                    console.log(response);
+                    alert('确认操作成功');
+                    this.$router.push({ path: '/myTakingtask' });
+                })
+                .catch((error) => {
+                    console.error("请求失败:", error);
+                });
         },
         getComments() {
             // 你可以替换成实际的 API 请求

@@ -28,6 +28,17 @@
                     <p><strong>等级：</strong>{{ item.publisherLevel }}</p>
 
                 </div>
+                <hr class="divider" />
+                <div>
+                    <p><strong>接单人：</strong>{{ item.takerUsername }} <span class="user-id">(ID: {{
+                            item.takerId}})</span></p>
+                    <hr class="divider" />
+                    <p><strong>性别：</strong>{{ item.takerSex }}</p>
+                    <hr class="divider" />
+                    <p><strong>电话：</strong>{{ item.takerPhone }}</p>
+                    <hr class="divider" />
+                    <p><strong>等级：</strong>{{ item.takerLevel }}</p>
+                </div>
                 <div class="task-meta">
                     <p><strong>发布时间：</strong>{{ formatDateTime(item.publishTime) }}</p>
                     <hr class="divider" />
@@ -49,7 +60,7 @@
                                 {{ comment.content }}
                             </p>
                             <div class="comment-footer">
-                                <span class="timestamp">{{ formatDateTime(comment.publishTime )}}</span>
+                                <span class="timestamp">{{ formatDateTime(comment.publishTime) }}</span>
                                 <button @click="replyToComment(comment.id)" class="reply-btn">回复</button>
                                 <button @click="deleteComment(comment.id)" class="delete-btn">Delete</button>
                             </div>
@@ -72,14 +83,6 @@
                 </div>
             </li>
         </ul>
-        <el-popover placement="top" width="200" v-model="visible">
-            <p>是否确定删除？</p>
-            <div class="popover-buttons">
-                <el-button size="mini" type="text" @click="no">取消</el-button>
-                <el-button type="danger" size="mini" @click="yes">确定</el-button>
-            </div>
-            <el-button slot="reference" class="delete-button">删除任务</el-button>
-        </el-popover>
     </div>
 </template>
 
@@ -192,190 +195,184 @@
 .popover-buttons .el-button {
     margin-left: 10px;
 }
-
 .button {
-    display: block;
-    width: 100%;
-    padding: 15px 0;
-    font-size: 18px;
-    background-color: #3498db;
-    color: white;
-    border: none;
-    border-radius: 5px;
-    cursor: pointer;
-    text-align: center;
-    transition: background-color 0.3s ease, transform 0.3s ease;
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  display: block;
+  width: 100%;
+  padding: 15px 0;
+  font-size: 18px;
+  background-color: #3498db;
+  color: white;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  text-align: center;
+  transition: background-color 0.3s ease, transform 0.3s ease;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
 }
 
 .button:hover {
-    background-color: #2980b9;
-    transform: translateY(-3px);
+  background-color: #2980b9;
+  transform: translateY(-3px);
 }
 
 .button:active {
-    background-color: #1f618d;
+  background-color: #1f618d;
 }
 
 .comments-section {
-    margin-top: 30px;
-    padding: 20px;
-    background-color: #ffffff;
-    border-radius: 10px;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.05);
+  margin-top: 30px;
+  padding: 20px;
+  background-color: #ffffff;
+  border-radius: 10px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.05);
 }
 
 .comments-section h3 {
-    font-size: 24px;
-    margin-bottom: 15px;
-    color: #2c3e50;
+  font-size: 24px;
+  margin-bottom: 15px;
+  color: #2c3e50;
 }
 
 .comments-list {
-    max-height: 300px;
-    overflow-y: auto;
-    margin-bottom: 20px;
+  max-height: 300px;
+  overflow-y: auto;
+  margin-bottom: 20px;
 }
 
 .comment-item {
-    padding: 10px;
-    border-bottom: 1px solid #ddd;
+  padding: 10px;
+  border-bottom: 1px solid #ddd;
 }
 
 .comment-item:last-child {
-    border-bottom: none;
+  border-bottom: none;
 }
 
 .comment-form {
-    display: flex;
-    flex-direction: column;
+  display: flex;
+  flex-direction: column;
 }
 
 .comment-form textarea {
-    width: 100%;
-    height: 100px;
-    padding: 10px;
-    margin-bottom: 10px;
-    border: 1px solid #ddd;
-    border-radius: 5px;
-    font-size: 16px;
-    resize: none;
+  width: 100%;
+  height: 100px;
+  padding: 10px;
+  margin-bottom: 10px;
+  border: 1px solid #ddd;
+  border-radius: 5px;
+  font-size: 16px;
+  resize: none;
 }
 
 .comment-form button {
-    align-self: flex-end;
-    padding: 10px 20px;
-    font-size: 16px;
-    background-color: #3498db;
-    color: white;
-    border: none;
-    border-radius: 5px;
-    cursor: pointer;
-    transition: background-color 0.3s ease;
+  align-self: flex-end;
+  padding: 10px 20px;
+  font-size: 16px;
+  background-color: #3498db;
+  color: white;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
 }
 
 .comment-form button:hover {
-    background-color: #2980b9;
+  background-color: #2980b9;
 }
 
 .demo-table-expand {
-    font-size: 0;
+  font-size: 0;
 }
 
 .demo-table-expand label {
-    width: 90px;
-    color: #99a9bf;
+  width: 90px;
+  color: #99a9bf;
 }
 
 .demo-table-expand .el-form-item {
-    margin-right: 0;
-    margin-bottom: 0;
-    width: 50%;
+  margin-right: 0;
+  margin-bottom: 0;
+  width: 50%;
 }
 
 .timestamp {
-    color: #888;
+  color: #888;
 }
 
 .delete-btn {
-    background: #f44336;
-    color: white;
-    border: none;
-    padding: 5px 10px;
-    cursor: pointer;
-    float: right;
+  background: #f44336;
+  color: white;
+  border: none;
+  padding: 5px 10px;
+  cursor: pointer;
+  float: right;
 }
 
 .reply-btn {
-    background: #3498db;
-    color: white;
-    border: none;
-    padding: 5px 10px;
-    cursor: pointer;
-    float: left;
-    margin-right: 10px;
-    font-size: 14px;
-    border-radius: 5px;
+  background: #3498db;
+  color: white;
+  border: none;
+  padding: 5px 10px;
+  cursor: pointer;
+  float: left;
+  margin-right: 10px;
+  font-size: 14px;
+  border-radius: 5px;
 }
 
 .reply-btn:hover {
-    background-color: #2980b9;
+  background-color: #2980b9;
 }
 
 .reply-dialog {
-    position: fixed;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    background: rgba(0, 0, 0, 0.5);
-    display: flex;
-    justify-content: center;
-    align-items: center;
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.5);
+  display: flex;
+  justify-content: center;
+  align-items: center;
 }
 
 .dialog-content {
-    background: white;
-    padding: 20px;
-    border-radius: 10px;
-    width: 400px;
-    max-width: 90%;
+  background: white;
+  padding: 20px;
+  border-radius: 10px;
+  width: 400px;
+  max-width: 90%;
 }
 
 .dialog-content h4 {
-    margin-top: 0;
+  margin-top: 0;
 }
 
 .dialog-actions {
-    margin-top: 20px;
-    text-align: right;
+  margin-top: 20px;
+  text-align: right;
 }
 
 .dialog-actions button {
-    background: #3498db;
-    color: white;
-    border: none;
-    padding: 10px 15px;
-    margin-left: 10px;
-    cursor: pointer;
-    border-radius: 5px;
+  background: #3498db;
+  color: white;
+  border: none;
+  padding: 10px 15px;
+  margin-left: 10px;
+  cursor: pointer;
+  border-radius: 5px;
 }
 
 .dialog-actions button:hover {
-    background-color: #2980b9;
+  background-color: #2980b9;
 }
 
 .comment-item.reply {
-    background-color: #f5f5f5;
-    /* 设置背景色为浅灰色 */
-    border-left: 3px solid #3498db;
-    /* 左边框颜色可选 */
-    padding: 8px 12px;
-    /* 缩小内边距 */
-    font-size: 14px;
-    /* 调整字体大小 */
-    margin-left: 20px;
-    /* 向右移动以突出显示 */
+  background-color: #f5f5f5; /* 设置背景色为浅灰色 */
+  border-left: 3px solid #3498db; /* 左边框颜色可选 */
+  padding: 8px 12px; /* 缩小内边距 */
+  font-size: 14px; /* 调整字体大小 */
+  margin-left: 20px; /* 向右移动以突出显示 */
 }
 </style>
 
@@ -385,34 +382,32 @@ import axios from "axios";
 export default {
     data() {
         return {
-            visible: false,
-            tableData: [],
-            sites: [2, 3, 4],
-            title: '',
-            myId: "3",
-            comments: [],
-            page: '1',
-            newComment: '',
-            deleteid: {
-                id: 0,
-            },
-            commentchild: {
-                presentCommentId: 1,
-                content: ""
-            },
+           tableData: [],
+      sites: [2, 3, 4],
+      title: '',
+      myId: "3",
+      comments: [],
+      page: '1',
+      newComment: '',
+      deleteid: {
+        id: 0,
+      },
+      commentchild: {
+        presentCommentId: 1,
+        content: ""
+      },
 
-            showDialog: false,
-            replyContent: '',
-            replyToCommentId: null,
+      showDialog: false,
+      replyContent: '',
+      replyToCommentId: null,
         };
     },
     mounted() {
-        this.myId = this.$route.query.taskId;
+    this.myId = this.$route.query.taskId;
+    this.getInfo();
+    this.getComments();
 
-        this.getInfo();
-        this.getComments();
-
-    },
+  },
     methods: {
         formatDateTime(timestamp) {
             if (!timestamp) return '';
@@ -424,29 +419,6 @@ export default {
             const m = ('0' + date.getMinutes()).slice(-2);
             const s = ('0' + date.getSeconds()).slice(-2);
             return `${Y}-${M}-${D} ${h}:${m}:${s}`;
-        },
-        yes() {
-            this.visible = false;
-            this.connectwithback();
-            alert('删除成功')
-            this.$router.push({ path: '/mytask' });
-        },
-        no() {
-            this.visible = false;
-        },
-        connectwithback() {
-            const jwt = localStorage.getItem('cqu-project-jwt')
-            const config = { headers: { 'Authorization': jwt } }
-            axios.post('http://localhost:8088/task/' + this.myId + '/delete', {}, config)
-                .then((response) => {
-                    console.log(response)
-
-                })
-                .catch((error) => {
-                    console.error("请求失败:", error);
-                })
-
-
         },
         getStateClass(state) {
             return {
@@ -475,103 +447,103 @@ export default {
                 }, 500);
         },
         getComments() {
-            // 你可以替换成实际的 API 请求
-            axios.get('http://localhost:8088/task/' + this.myId + '/comment/' + this.page)
-                .then((response) => {
-                    this.comments = response.data.comments;
-                    console.log(response);
+      // 你可以替换成实际的 API 请求
+      axios.get('http://localhost:8088/task/' + this.myId + '/comment/' + this.page)
+        .then((response) => {
+          this.comments = response.data.comments;
+          console.log(response);
 
-                    console.log(this.comments);
-                })
-                .catch((error) => {
-                    console.error("获取评论失败:", error);
-                });
-        },
-        deleteComment(id) {
-            this.deleteid.id = id
+          console.log(this.comments);
+        })
+        .catch((error) => {
+          console.error("获取评论失败:", error);
+        });
+    },
+    deleteComment(id) {
+      this.deleteid.id = id
 
-            const jwt = localStorage.getItem('cqu-project-jwt')
-            console.log('[myTask组件]' + '获取到的jwt为' + jwt)
-            const config = { headers: { 'Authorization': jwt } }
+      const jwt = localStorage.getItem('cqu-project-jwt')
+      console.log('[myTask组件]' + '获取到的jwt为' + jwt)
+      const config = { headers: { 'Authorization': jwt } }
 
-            axios.post('http://localhost:8088/task/' + this.myId + '/comment/delete', this.deleteid, config)
-                .then((res) => {
-                    console.log(res);
-                    alert(res.data);
-                    this.getComments();
-                })
-                .catch((error) => {
-                    console.error("请求失败:", error);
-                })
-
-
-
-
-        },
-        replyToComment(val) {
-            console.log(val);
-            this.showDialog = true;
-            this.showReplyDialog(val);
-        },
-
-        showReplyDialog(commentId) {
-            console.log(commentId)
-            this.commentchild.presentCommentId = commentId;
-            this.replyContent = '';
-            this.showDialog = true;
-        },
-        hideReplyDialog() {
-            this.showDialog = false;
-            this.replyToCommentId = null;
-        },
-        submitReply() {
-            if (this.replyContent.trim() === '') {
-                alert('回复内容不能为空');
-                return;
-            }
-
-            console.log(this.newComment);
-            const jwt = localStorage.getItem('cqu-project-jwt');
-            const config = { headers: { 'Authorization': jwt } };
-            this.commentchild.content = this.replyContent;
+      axios.post('http://localhost:8088/task/' + this.myId + '/comment/delete', this.deleteid, config)
+        .then((res) => {
+          console.log(res);
+          alert(res.data);
+          this.getComments();
+        })
+        .catch((error) => {
+          console.error("请求失败:", error);
+        })
 
 
 
-            axios.post('http://localhost:8088/task/' + this.myId + '/comment/createNested', this.commentchild, config)
-                .then(() => {
-                    this.hideReplyDialog();
-                    this.getComments();
-                })
-                .catch((error) => {
-                    console.error("提交回复失败:", error);
-                });
-        },
-        postComment() {
-            if (this.newComment.trim() === '') {
-                alert('评论不能为空');
-                return;
-            }
-            console.log(this.newComment);
-            const jwt = localStorage.getItem('cqu-project-jwt');
-            const config = { headers: { 'Authorization': jwt } };
-            const commentData = {
-                content: this.newComment,
-                // taskId: this.myId
 
-            };
+    },
+    replyToComment(val) {
+      console.log(val);
+      this.showDialog = true;
+      this.showReplyDialog(val);
+    },
 
-            axios.post('http://localhost:8088/task/' + this.myId + '/comment/create', commentData, config)
-                .then(() => {
-                    this.newComment = ''; // 清空输入框
-                    this.getComments(); // 刷新评论列表
+    showReplyDialog(commentId) {
+      console.log(commentId)
+      this.commentchild.presentCommentId = commentId;
+      this.replyContent = '';
+      this.showDialog = true;
+    },
+    hideReplyDialog() {
+      this.showDialog = false;
+      this.replyToCommentId = null;
+    },
+    submitReply() {
+      if (this.replyContent.trim() === '') {
+        alert('回复内容不能为空');
+        return;
+      }
+
+      console.log(this.newComment);
+      const jwt = localStorage.getItem('cqu-project-jwt');
+      const config = { headers: { 'Authorization': jwt } };
+      this.commentchild.content = this.replyContent;
 
 
-                })
-                .catch((error) => {
-                    console.error("提交评论失败:", error);
-                });
-            this.getComments();
-        }
+
+      axios.post('http://localhost:8088/task/' + this.myId + '/comment/createNested', this.commentchild, config)
+        .then(() => {
+          this.hideReplyDialog();
+          this.getComments(); 
+        })
+        .catch((error) => {
+          console.error("提交回复失败:", error);
+        });
+    },
+    postComment() {
+      if (this.newComment.trim() === '') {
+        alert('评论不能为空');
+        return;
+      }
+      console.log(this.newComment);
+      const jwt = localStorage.getItem('cqu-project-jwt');
+      const config = { headers: { 'Authorization': jwt } };
+      const commentData = {
+        content: this.newComment,
+        // taskId: this.myId
+
+      };
+
+      axios.post('http://localhost:8088/task/' + this.myId + '/comment/create', commentData, config)
+        .then(() => {
+          this.newComment = ''; // 清空输入框
+          this.getComments(); // 刷新评论列表
+
+
+        })
+        .catch((error) => {
+          console.error("提交评论失败:", error);
+        });
+      this.getComments();
+    }
     },
 
 };

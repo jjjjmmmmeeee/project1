@@ -15,6 +15,10 @@ import TaskDetailComplete from "@/components/taskDetailComplete.vue";
 import TaskDetailTimeout from "@/components/taskDetailTimeout.vue";
 import TaskDetailuncomfirmed from "@/components/taskDetailuncomfirmed.vue";
 import MyTakingtask from "@/components/myTakingtask.vue";
+import EditProfile from "@/components/edit-profile.vue";
+import Othperinf from "@/components/othperinf.vue";
+import Findback from "@/components/findback.vue";
+import Chat from "@/components/chat.vue";
 Vue.use(VueRouter)
 
 const router =new VueRouter({
@@ -25,6 +29,7 @@ const router =new VueRouter({
         {path:'/availableTask',component: movie},
         {path:'/mytask',component:MyTask},
         {path:'/perinf',component:Perinf},
+        {path:'/othperinf',component:Othperinf},
         {path:'/createTask',component:CreateTask},
         {path:'/taskDetailUnTaken',component:taskDetailUnTaken},
         {path:'/taskDetailIncomplete',component:TaskDetailIncomplete},
@@ -33,6 +38,9 @@ const router =new VueRouter({
         {path:'/taskDetailunconfirmed',component:TaskDetailuncomfirmed},
         {path:'/myTakingtask',component:MyTakingtask},
         {path:'/TaskInformation',component:TaskInformation},
+        {path:'/edit-profile',component:EditProfile},
+        {path:'/findbackpassword',component:Findback},
+        {path:'/chat',component:Chat}
         
 
 

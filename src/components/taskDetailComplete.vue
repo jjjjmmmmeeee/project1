@@ -51,8 +51,13 @@
                     <div class="comments-list">
                         <div v-for="comment in comments" :key="comment.id"
                             :class="['comment-item', { reply: comment.parentId !== 0 }]">
-
-                            <p><strong>{{ comment.publisherUsername }}:</strong> {{ comment.content }}</p>
+                            <p>
+                                <strong>{{ comment.publisherUsername }}
+                                    {{ comment.parentId !== 0 ? `回复${comment.receiverUsername}` :
+                                    `:` }}
+                                </strong>
+                                {{ comment.content }}
+                            </p>
                             <div class="comment-footer">
                                 <span class="timestamp">{{ formatDateTime(comment.publishTime) }}</span>
                                 <button @click="replyToComment(comment.id)" class="reply-btn">回复</button>
@@ -412,6 +417,7 @@ export default {
 
         this.getInfo();
         this.getComments();
+        this.checkLikeStatus();
     },
     methods: {
         formatDateTime(timestamp) {
@@ -427,21 +433,57 @@ export default {
         },
 
         handleLikeClick() {
-            this.isLiked = !this.isLiked;  // 切换按钮状态
+            // this.isLiked = !this.isLiked;  // 切换按钮状态
 
             const jwt = localStorage.getItem('cqu-project-jwt');
             const config = { headers: { 'Authorization': jwt } };
-            const likeStatus = this.isLiked ? 1 : 0;  // 1 代表已点赞，0 代表未点赞
-
-            axios.post(`http://localhost:8088/task/${this.myId}/like`, { liked: likeStatus }, config)
+             const likeStatus = this.isLiked ? 1 : 0;  // 1 代表已点赞，0 代表未点赞
+            console.log(this.myId);
+            if (this.isLiked) {
+                // 如果当前是已点赞状态，则调用取消点赞 API
+                axios.post(`http://localhost:8088/task/${this.myId}/not_like`, {}, config)
+                    .then(response => {
+                        this.isLiked = false; // 更新本地状态
+                        console.log('取消点赞成功:', response);
+                    })
+                    .catch(error => {
+                        console.error("取消点赞请求失败:", error);
+                    });
+            } else{
+            axios.post(`http://localhost:8088/task/${this.myId}/like`, {  }, config)
                 .then(response => {
+                    this.isLiked = true;
                     console.log('点赞状态已更新:', response);
                 })
                 .catch(error => {
                     console.error("点赞请求失败:", error);
-                });
+                });}
+                console.log(this.isLiked.data);
+                
         },
 
+        checkLikeStatus() {
+        const jwt = localStorage.getItem('cqu-project-jwt');
+        const config = { headers: { 'Authorization': jwt } };
+            console.log(this.myId);
+            
+        axios.get(`http://localhost:8088/task/${this.myId}/like`, config)
+            .then(response => {
+                this.isLiked = response.data; // 假设服务器返回的数据格式为 { liked: true/false }
+                console.log('当前点赞状态:', this.isLiked.data);
+            })
+            .catch(error => {
+                console.error("获取点赞状态失败:", error);
+            });
+    },
+
+    getStateClass(state) {
+        return {
+            'state-pending': state === 'Pending',
+            'state-completed': state === 'Completed',
+            'state-cancelled': state === 'Cancelled'
+        };
+    },
         getStateClass(state) {
             return {
                 'state-pending': state === 'Pending',

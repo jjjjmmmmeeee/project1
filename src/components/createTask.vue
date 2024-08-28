@@ -90,7 +90,7 @@ export default {
           // 合并 date1 和 date2 为一个完整的时间戳
           const date = new Date(this.form.date1);
           const time = new Date(this.form.date2);
-
+          
           date.setHours(time.getHours());
           date.setMinutes(time.getMinutes());
           date.setSeconds(time.getSeconds());
@@ -114,8 +114,15 @@ export default {
 
         axios.post("/creatingTask", this.form, config)
           .then((res) => {
-            console.log(res);
-            this.$router.push({ path: '/mytask' });
+            console.log(res.data);
+            if(res.data=='Failed to create task: Reward too large.'){
+              alert("你输入的报酬太大了")
+            }else if(res.data=='Failed to create task: Reward too small.'){
+              alert("你小子还要人倒贴？赶紧重新输入报酬")
+            }else{
+              this.$router.push({ path: '/mytask' });
+            }
+            
           })
           .catch((error) => {
             console.error("请求失败:", error);

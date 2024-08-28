@@ -1,7 +1,7 @@
 <template>
     <div class="task-container">
         <ul class="task-list">
-            <li v-for="item in tableData" :key="item.id" class="task-item">
+            <li v-for="item in tableData" :key="item.cid" class="task-item">
                 <h2 class="task-title">{{ item.title }}</h2>
                 <div class="task-details">
                     <p><strong>描述：</strong>{{ item.description }}</p>
@@ -19,7 +19,7 @@
                 </div>
                 <div>
                     <p><strong>发布者：</strong>{{ item.publisherUsername }} <span class="user-id">(ID: {{
-                            item.publisherId}})</span></p>
+                        item.publisherId }})</span></p>
                     <hr class="divider" />
                     <p><strong>性别：</strong>{{ item.publisherSex }}</p>
                     <hr class="divider" />
@@ -30,7 +30,7 @@
                 <hr class="divider" />
                 <div>
                     <p><strong>接单人：</strong>{{ item.takerUsername }} <span class="user-id">(ID: {{
-                            item.takerId}})</span></p>
+                        item.takerId }})</span></p>
                     <hr class="divider" />
                     <p><strong>性别：</strong>{{ item.takerSex }}</p>
                     <hr class="divider" />
@@ -51,8 +51,13 @@
                     <div class="comments-list">
                         <div v-for="comment in comments" :key="comment.id"
                             :class="['comment-item', { reply: comment.parentId !== 0 }]">
-
-                            <p><strong>{{ comment.publisherUsername }}:</strong> {{ comment.content }}</p>
+                            <p>
+                                <strong>{{ comment.publisherUsername }}
+                                    {{ comment.parentId !== 0 ? `回复${comment.receiverUsername}` :
+                                    `:` }}
+                                </strong>
+                                {{ comment.content }}
+                            </p>
                             <div class="comment-footer">
                                 <span class="timestamp">{{ formatDateTime(comment.publishTime) }}</span>
                                 <button @click="replyToComment(comment.id)" class="reply-btn">回复</button>
@@ -130,11 +135,11 @@ export default {
         };
     },
     mounted() {
-    this.myId = this.$route.query.taskId;
-    this.getInfo();
-    this.getComments();
+        this.myId = this.$route.query.taskId;
+        this.getInfo();
+        this.getComments();
 
-  },
+    },
     methods: {
         formatDateTime(timestamp) {
             if (!timestamp) return '';
@@ -170,10 +175,12 @@ export default {
             }, 500);
         },
         confirmCompletion(myId) {
+            console.log(this.myId);
+            
             const jwt = localStorage.getItem('cqu-project-jwt');
             const config = { headers: { 'Authorization': jwt } };
 
-            axios.post(`http://localhost:8088/task/${myId}/complete`, {}, config)
+            axios.post('http://localhost:8088/task/'+this.myId+'/confirm', {}, config)
                 .then(response => {
                     this.$message.success("任务已标记为完成");
                     this.getInfo();
@@ -182,14 +189,48 @@ export default {
                     console.error("任务完成请求失败:", error);
                 });
         },
+        validateDueTime(rule, value, callback) {
+      if (!this.form.date1 || !this.form.date2) {
+        callback(new Error('请选择日期和时间'));
+      } else {
+        callback();
+      }
+    },
+    // onSubmit() {
+    //   this.$refs.form.validate((valid) => {
+    //     if (valid) {
+    //       // 合并 date1 和 date2 为一个完整的时间戳
+    //       const date = new Date(this.form.date1);
+    //       const time = new Date(this.form.date2);
+
+    //       date.setHours(time.getHours());
+    //       date.setMinutes(time.getMinutes());
+    //       date.setSeconds(time.getSeconds());
+
+    //       this.form.dueTime = date.getTime();
+
+    //       console.log('提交的数据:', this.form);
+    //       this.submitRejection();
+
+    //     } else {
+    //       alert('请填写所有必填项!');
+    //       return false;
+    //     }
+    //   });
+    // },
         openRejectDialog() {
             this.rejectDialogVisible = true;
         },
         submitRejection() {
             const jwt = localStorage.getItem('cqu-project-jwt');
             const config = { headers: { 'Authorization': jwt } };
-
-            axios.post(`http://localhost:8088/task/${this.myId}/reject`, this.rejectForm, config)
+            console.log(this.rejectForm);
+            console.log(this.myId);
+            console.log(this.form);
+            const dueTime = new Date(this.rejectForm.dueTime).getTime();
+            console.log({dueTime});
+            
+            axios.post('http://localhost:8088/task/'+this.myId+'/refuse', { dueTime }, config)
                 .then(response => {
                     this.$message.success("拒绝任务成功");
                     this.rejectDialogVisible = false;
@@ -200,103 +241,103 @@ export default {
                 });
         },
         getComments() {
-      // 你可以替换成实际的 API 请求
-      axios.get('http://localhost:8088/task/' + this.myId + '/comment/' + this.page)
-        .then((response) => {
-          this.comments = response.data.comments;
-          console.log(response);
+            // 你可以替换成实际的 API 请求
+            axios.get('http://localhost:8088/task/' + this.myId + '/comment/' + this.page)
+                .then((response) => {
+                    this.comments = response.data.comments;
+                    console.log(response);
 
-          console.log(this.comments);
-        })
-        .catch((error) => {
-          console.error("获取评论失败:", error);
-        });
-    },
-    deleteComment(id) {
-      this.deleteid.id = id
+                    console.log(this.comments);
+                })
+                .catch((error) => {
+                    console.error("获取评论失败:", error);
+                });
+        },
+        deleteComment(id) {
+            this.deleteid.id = id
 
-      const jwt = localStorage.getItem('cqu-project-jwt')
-      console.log('[myTask组件]' + '获取到的jwt为' + jwt)
-      const config = { headers: { 'Authorization': jwt } }
+            const jwt = localStorage.getItem('cqu-project-jwt')
+            console.log('[myTask组件]' + '获取到的jwt为' + jwt)
+            const config = { headers: { 'Authorization': jwt } }
 
-      axios.post('http://localhost:8088/task/' + this.myId + '/comment/delete', this.deleteid, config)
-        .then((res) => {
-          console.log(res);
-          alert(res.data);
-          this.getComments();
-        })
-        .catch((error) => {
-          console.error("请求失败:", error);
-        })
-
-
-
-
-    },
-    replyToComment(val) {
-      console.log(val);
-      this.showDialog = true;
-      this.showReplyDialog(val);
-    },
-
-    showReplyDialog(commentId) {
-      console.log(commentId)
-      this.commentchild.presentCommentId = commentId;
-      this.replyContent = '';
-      this.showDialog = true;
-    },
-    hideReplyDialog() {
-      this.showDialog = false;
-      this.replyToCommentId = null;
-    },
-    submitReply() {
-      if (this.replyContent.trim() === '') {
-        alert('回复内容不能为空');
-        return;
-      }
-
-      console.log(this.newComment);
-      const jwt = localStorage.getItem('cqu-project-jwt');
-      const config = { headers: { 'Authorization': jwt } };
-      this.commentchild.content = this.replyContent;
+            axios.post('http://localhost:8088/task/' + this.myId + '/comment/delete', this.deleteid, config)
+                .then((res) => {
+                    console.log(res);
+                    alert(res.data);
+                    this.getComments();
+                })
+                .catch((error) => {
+                    console.error("请求失败:", error);
+                })
 
 
 
-      axios.post('http://localhost:8088/task/' + this.myId + '/comment/createNested', this.commentchild, config)
-        .then(() => {
-          this.hideReplyDialog();
-          this.getComments(); 
-        })
-        .catch((error) => {
-          console.error("提交回复失败:", error);
-        });
-    },
-    postComment() {
-      if (this.newComment.trim() === '') {
-        alert('评论不能为空');
-        return;
-      }
-      console.log(this.newComment);
-      const jwt = localStorage.getItem('cqu-project-jwt');
-      const config = { headers: { 'Authorization': jwt } };
-      const commentData = {
-        content: this.newComment,
-        // taskId: this.myId
 
-      };
+        },
+        replyToComment(val) {
+            console.log(val);
+            this.showDialog = true;
+            this.showReplyDialog(val);
+        },
 
-      axios.post('http://localhost:8088/task/' + this.myId + '/comment/create', commentData, config)
-        .then(() => {
-          this.newComment = ''; // 清空输入框
-          this.getComments(); // 刷新评论列表
+        showReplyDialog(commentId) {
+            console.log(commentId)
+            this.commentchild.presentCommentId = commentId;
+            this.replyContent = '';
+            this.showDialog = true;
+        },
+        hideReplyDialog() {
+            this.showDialog = false;
+            this.replyToCommentId = null;
+        },
+        submitReply() {
+            if (this.replyContent.trim() === '') {
+                alert('回复内容不能为空');
+                return;
+            }
+
+            console.log(this.newComment);
+            const jwt = localStorage.getItem('cqu-project-jwt');
+            const config = { headers: { 'Authorization': jwt } };
+            this.commentchild.content = this.replyContent;
 
 
-        })
-        .catch((error) => {
-          console.error("提交评论失败:", error);
-        });
-      this.getComments();
-    }
+
+            axios.post('http://localhost:8088/task/' + this.myId + '/comment/createNested', this.commentchild, config)
+                .then(() => {
+                    this.hideReplyDialog();
+                    this.getComments();
+                })
+                .catch((error) => {
+                    console.error("提交回复失败:", error);
+                });
+        },
+        postComment() {
+            if (this.newComment.trim() === '') {
+                alert('评论不能为空');
+                return;
+            }
+            console.log(this.newComment);
+            const jwt = localStorage.getItem('cqu-project-jwt');
+            const config = { headers: { 'Authorization': jwt } };
+            const commentData = {
+                content: this.newComment,
+                // taskId: this.myId
+
+            };
+
+            axios.post('http://localhost:8088/task/' + this.myId + '/comment/create', commentData, config)
+                .then(() => {
+                    this.newComment = ''; // 清空输入框
+                    this.getComments(); // 刷新评论列表
+
+
+                })
+                .catch((error) => {
+                    console.error("提交评论失败:", error);
+                });
+            this.getComments();
+        }
     }
 };
 </script>

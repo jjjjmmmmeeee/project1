@@ -1,4 +1,5 @@
 <template>
+    
     <div class="task-container">
         <ul class="task-list">
             <li v-for="item in tableData" :key="item.id" class="task-item">
@@ -78,6 +79,7 @@
                 </div>
             </li>
         </ul>
+        <div class="action-buttons">
         <el-popover placement="top" width="200" v-model="visible">
             <p>该任务已被接受，取消将扣除你5点经验值，是否确定取消？</p>
             <div class="popover-buttons">
@@ -86,6 +88,8 @@
             </div>
             <el-button slot="reference" class="delete-button">取消任务</el-button>
         </el-popover>
+        
+    </div>
     </div>
 </template>
 
@@ -383,6 +387,32 @@
     margin-left: 20px;
     /* 向右移动以突出显示 */
 }
+.action-buttons {
+    display: flex;
+    justify-content: space-between; /* 使按钮水平分布并自动分配空间 */
+    margin-top: 20px; /* 添加顶部边距 */
+}
+
+.popover-buttons {
+    display: flex;
+    justify-content: flex-end;
+    margin-top: 10px;
+}
+
+.popover-buttons .el-button {
+    margin-left: 5px; /* 减少按钮之间的间距 */
+}
+
+.delete-button {
+    color: #c0392b;
+    font-size: 14px;
+}
+
+.confirm-button {
+    background-color: #3498db;
+    color: white;
+    font-size: 14px;
+}
 </style>
 
 <script>
@@ -443,7 +473,7 @@ export default {
         connectwithback() {
             const jwt = localStorage.getItem('cqu-project-jwt')
             const config = { headers: { 'Authorization': jwt } }
-            axios.post('http://localhost:8088/task/' + this.myId + '/deleteTask', {}, config)
+            axios.post('http://localhost:8088/task/' + this.myId + '/delete', {}, config)
                 .then((response) => {
                     console.log(response)
 
@@ -479,6 +509,20 @@ export default {
                         })
 
                 }, 500);
+        },
+        confirmAction() {
+            const jwt = localStorage.getItem('cqu-project-jwt');
+            const config = { headers: { 'Authorization': jwt } };
+            
+            axios.post('http://localhost:8088/task/' + this.myId + '/requestConfirm', {}, config)
+                .then((response) => {
+                    console.log(response);
+                    alert('确认操作成功');
+                    this.$router.push({ path: '/mytask' });
+                })
+                .catch((error) => {
+                    console.error("请求失败:", error);
+                });
         },
         getComments() {
             // 你可以替换成实际的 API 请求

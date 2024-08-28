@@ -3,50 +3,75 @@
     <ul class="task-list">
       <li v-for="item in tableData" :key="item.id" class="task-item">
         <h2 class="task-title">{{ item.title }}</h2>
-                <div class="task-details">
-                    <p><strong>描述：</strong>{{ item.description }}</p>
-                    <hr class="divider" />
-                    <p><strong>截止时间：</strong>{{ formatDateTime(item.dueTime) }}</p>
-                    <hr class="divider" />
-                    <p><strong>任务状态：</strong><span :class="getStateClass(item.state)">{{ item.state }}</span></p>
-                    <hr class="divider" />
-                    <p><strong>校区：</strong>{{ item.campus }}</p>
-                    <hr class="divider" />
-                    <p><strong>任务开始地点：</strong>{{ item.startAddress }}</p>
-                    <hr class="divider" />
-                    <p><strong>任务结束地点：</strong>{{ item.endAddress }}</p>
-                    <hr class="divider" />
-                </div>
-                <div>
-                    <p><strong>发布者：</strong>{{ item.publisherUsername }} <span class="user-id">(ID: {{ item.publisherId
-                            }})</span></p>
-                    <hr class="divider" />
-                    <p><strong>性别：</strong>{{ item.publisherSex }}</p>
-                    <hr class="divider" />
-                    <p><strong>电话：</strong>{{ item.publisherPhone }}</p>
-                    <hr class="divider" />
-                    <p><strong>等级：</strong>{{ item.publisherLevel }}</p>
+        <div class="task-details">
+          <p><strong>描述：</strong>{{ item.description }}</p>
+          <hr class="divider" />
+          <p><strong>截止时间：</strong>{{ formatDateTime(item.dueTime) }}</p>
+          <hr class="divider" />
+          <p><strong>任务状态：</strong><span :class="getStateClass(item.state)">{{ item.state }}</span></p>
+          <hr class="divider" />
+          <p><strong>校区：</strong>{{ item.campus }}</p>
+          <hr class="divider" />
+          <p><strong>任务开始地点：</strong>{{ item.startAddress }}</p>
+          <hr class="divider" />
+          <p><strong>任务结束地点：</strong>{{ item.endAddress }}</p>
+          <hr class="divider" />
+        </div>
+        <div>
+          <p><strong>发布者：</strong>{{ item.publisherUsername }} <span class="user-id">(ID: {{ item.publisherId
+              }})</span></p>
+          <hr class="divider" />
+          <p><strong>性别：</strong>{{ item.publisherSex }}</p>
+          <hr class="divider" />
+          <p><strong>电话：</strong>{{ item.publisherPhone }}</p>
+          <hr class="divider" />
+          <p><strong>等级：</strong>{{ item.publisherLevel }}</p>
 
-                </div>
-                <div class="task-meta">
-                    <p><strong>发布时间：</strong>{{ formatDateTime(item.publishTime) }}</p>
-                    <hr class="divider" />
-                    <p><strong>接取时间：</strong>{{ formatDateTime(item.taketime) }}</p>
-                    <hr class="divider" />
-                    <p><strong>报酬：</strong><span class="reward">{{ item.reward }}</span></p>
-                    <hr class="divider" />
-                </div>
+        </div>
+        <div class="task-meta">
+          <p><strong>发布时间：</strong>{{ formatDateTime(item.publishTime) }}</p>
+          <hr class="divider" />
+          <p><strong>接取时间：</strong>{{ formatDateTime(item.taketime) }}</p>
+          <hr class="divider" />
+          <p><strong>报酬：</strong><span class="reward">{{ item.reward }}</span></p>
+          <hr class="divider" />
+        </div>
         <div class="comments-section">
           <h3>评论区</h3>
           <div class="comments-list">
-            <div v-for="comment in comments" :key="comment.id" :class="['comment-item', { reply: comment.parentId !== 0 }]">
+            <div v-for="comment in comments" :key="comment.id"
+              :class="['comment-item', { reply: comment.parentId !== 0 }]">
 
-              <p><strong>{{ comment.publisherUsername }}:</strong> {{ comment.content }}</p>
+
+
+              <div class="comment-content">
+                <!-- 显示头像-->
+                <div class="avatar-container">
+                  <el-avatar :size="60" :src="getAvatarUrl(comment.avatarPath)" @click.native="goToUserProfile(1)">
+                    <img src= />
+                  </el-avatar>
+                </div>
+                <div class="comment-content-1">
+                  <p>
+                    <strong>{{ comment.publisherUsername }}
+                      {{ comment.parentId !== 0 ? `回复${comment.receiverUsername}` :
+                        `:` }}
+                    </strong>
+                    {{ comment.content }}
+                  </p>
+                </div>
+                <!-- 显示点赞图标和点赞数 -->
+                <div class="like-section">
+                  <i :class="{ 'el-icon-thumb': true, 'liked': likestate }" @click="toggleLike(comment.id)"></i>
+                  <span>点赞数</span>
+                </div>
+              </div>
               <div class="comment-footer">
                 <span class="timestamp">{{ formatDateTime(comment.publishTime) }}</span>
                 <button @click="replyToComment(comment.id)" class="reply-btn">回复</button>
                 <button @click="deleteComment(comment.id)" class="delete-btn">Delete</button>
               </div>
+
             </div>
           </div>
           <div class="comment-form">
@@ -67,11 +92,45 @@
 
       </li>
     </ul>
-    <button class="button">接单</button>
+    <button @click="handleAcceptTask" class="button">接单</button>
   </div>
 </template>
 
 <style scoped>
+/* .like-section {
+  display: flex;
+  align-items: center;
+  position: absolute;
+  bottom: 10px;
+  right: 10px;
+} */
+
+.el-icon-thumb {
+  cursor: pointer;
+  margin-right: 5px;
+}
+
+.el-icon-thumb.liked {
+  color: red; /* 已点赞状态的图标颜色 */
+}
+.comment-content {
+  display: flex;
+
+  margin-left: 10px;
+  margin-left: 0%;
+}
+
+.avatar-container {
+  width: 8%;
+  margin-left: 10px;
+  margin-left: 0%;
+  position: relative;
+}
+
+.comment-content-1 {
+  width: 92%;
+}
+
 .task-container {
   max-width: 900px;
   margin: 0 auto;
@@ -334,11 +393,16 @@
 }
 
 .comment-item.reply {
-  background-color: #f5f5f5; /* 设置背景色为浅灰色 */
-  border-left: 3px solid #3498db; /* 左边框颜色可选 */
-  padding: 8px 12px; /* 缩小内边距 */
-  font-size: 14px; /* 调整字体大小 */
-  margin-left: 20px; /* 向右移动以突出显示 */
+  background-color: #f5f5f5;
+  /* 设置背景色为浅灰色 */
+  border-left: 3px solid #3498db;
+  /* 左边框颜色可选 */
+  padding: 8px 12px;
+  /* 缩小内边距 */
+  font-size: 14px;
+  /* 调整字体大小 */
+  margin-left: 20px;
+  /* 向右移动以突出显示 */
 }
 </style>
 
@@ -358,10 +422,14 @@ export default {
       deleteid: {
         id: 0,
       },
+      likeDTO:{
+        comment_id:''
+      },
       commentchild: {
         presentCommentId: 1,
         content: ""
       },
+      likestate:true,
 
       showDialog: false,
       replyContent: '',
@@ -373,20 +441,53 @@ export default {
 
     this.getInfo();
     this.getComments();
+    this.checklike();
 
   },
   methods: {
+    checklike(val){
+
+    },
+    toggleLike(val){
+          this.likeDTO.comment_id=val;
+          this.postlike();
+    },
+    
+    postlike(){
+      const jwt = localStorage.getItem('cqu-project-jwt')
+          const config = { headers: { 'Authorization': jwt } }
+          console.log("点赞的评论id是："+this.likeDTO.comment_id);
+          
+          axios.post('http://localhost:8088/task/' + this.myId+'/comment/like',this.likeDTO, config)
+            .then((response) => {
+               console.log(response);
+               this.checklike();
+              
+            })
+            .catch((error) => {
+              console.error("请求失败:", error);
+            })
+    },
+    goToUserProfile(userId) {
+      // 跳转到对应的详情页
+      console.log("点击了按钮");
+
+      this.$router.push({ path: '/othperinf', query: { userId } });
+    },
+    getAvatarUrl(avatarPath) {
+      return `http://localhost:8088${avatarPath}`;
+    },
     formatDateTime(timestamp) {
-            if (!timestamp) return '';
-            const date = new Date(timestamp);
-            const Y = date.getFullYear();
-            const M = ('0' + (date.getMonth() + 1)).slice(-2);
-            const D = ('0' + date.getDate()).slice(-2);
-            const h = ('0' + date.getHours()).slice(-2);
-            const m = ('0' + date.getMinutes()).slice(-2);
-            const s = ('0' + date.getSeconds()).slice(-2);
-            return `${Y}-${M}-${D} ${h}:${m}:${s}`;
-        },
+      if (!timestamp) return '';
+      const date = new Date(timestamp);
+      const Y = date.getFullYear();
+      const M = ('0' + (date.getMonth() + 1)).slice(-2);
+      const D = ('0' + date.getDate()).slice(-2);
+      const h = ('0' + date.getHours()).slice(-2);
+      const m = ('0' + date.getMinutes()).slice(-2);
+      const s = ('0' + date.getSeconds()).slice(-2);
+      return `${Y}-${M}-${D} ${h}:${m}:${s}`;
+    },
     getStateClass(state) {
       if (state === 'Pending') {
         return 'state-pending';
@@ -398,10 +499,7 @@ export default {
       return '';
     },
     getInfo() {
-      // axios.get('http://localhost:8088/task/' + this.myId).then((response) => {
-      //   this.title = response.data.title;
-      //   this.tableData = response.data;
-      // });
+
       setTimeout(
         () => {
           const jwt = localStorage.getItem('cqu-project-jwt')
@@ -426,7 +524,6 @@ export default {
         .then((response) => {
           this.comments = response.data.comments;
           console.log(response);
-
           console.log(this.comments);
         })
         .catch((error) => {
@@ -454,6 +551,22 @@ export default {
 
 
     },
+
+    handleAcceptTask() {
+      const jwt = localStorage.getItem('cqu-project-jwt');
+      const config = { headers: { 'Authorization': jwt } };
+
+      axios.post('http://localhost:8088/task/' + this.myId, {}, config)
+        .then((response) => {
+          alert('任务接单成功');
+          // 更新任务状态或重新获取任务信息
+          this.getInfo();
+        })
+        .catch((error) => {
+          console.error("接单请求失败:", error);
+        });
+    },
+
     replyToComment(val) {
       console.log(val);
       this.showDialog = true;
@@ -486,7 +599,7 @@ export default {
       axios.post('http://localhost:8088/task/' + this.myId + '/comment/createNested', this.commentchild, config)
         .then(() => {
           this.hideReplyDialog();
-          this.getComments(); 
+          this.getComments();
         })
         .catch((error) => {
           console.error("提交回复失败:", error);

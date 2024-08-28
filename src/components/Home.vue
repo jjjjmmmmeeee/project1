@@ -3,9 +3,8 @@
     <!-- 用户信息部分 -->
     <div class="user-info">
       <!-- <img :src="userAvatar" alt="User Avatar" class="user-avatar" @click="goToProfile" /> -->
-      <img src="/image/lunbo2.jpg" alt="6666" class="user-avatar" @click="goToProfile" />
+      <img :src="avatarUrl" alt="User Avatar" class="user-avatar" @click="goToProfile" />
     </div>
-
 
     <!-- 按钮部分 -->
     <div class="button-container">
@@ -13,6 +12,7 @@
       <button class="btn btn-order" @click="navigateTo('myTakingtask')">我的接单</button>
       <button class="btn btn-market" @click="navigateTo('availableTask')">任务市场</button>
     </div>
+    <button @click="gotochat">聊天</button>
   </div>
 </template>
 
@@ -22,20 +22,24 @@
   display: flex;
   flex-direction: column;
   align-items: center;
+  margin-top: 0%;
+  padding: 0%;
   justify-content: center;
   height: 100vh;
+  width: 100%;
   background: url('/public/image/lunbo5.jpg') no-repeat center center;
   background-size: cover;
-  padding: 20px;
+  overflow: hidden;
 }
 
 /* User info styling */
 .user-info {
-  position: absolute;
+  position: fixed;
   top: 20px;
   right: 20px;
   display: flex;
   align-items: center;
+  z-index: 10; /* Ensures the user info is above other elements */
 }
 
 .user-avatar {
@@ -44,12 +48,6 @@
   border-radius: 50%;
   cursor: pointer;
   margin-right: 10px;
-}
-
-.user-name {
-  font-size: 16px;
-  color: #fff;
-  cursor: pointer;
 }
 
 /* Button container styling */
@@ -103,9 +101,20 @@
 </style>
 
 <script>
+import axios from 'axios';
 export default {
-  
+  data() {
+    return {
+      User: {
+        username: '',
+      },
+      avatarUrl: ''
+    };
+  },
   methods: {
+    gotochat(){
+        this.$router.push('/chat')
+    },
     goToProfile() {
       // 跳转到个人主页
       this.$router.push('/perinf');
@@ -115,35 +124,22 @@ export default {
       this.$router.push(`/${page}`);
     },
     getuser() {
-            setTimeout(
-                () => {
-                    const jwt = localStorage.getItem('cqu-project-jwt')
-                    console.log('[perinf组件]' + '获取到的jwt为' + jwt)
-                    const config = { headers: { 'Authorization': jwt } }
+      const jwt = localStorage.getItem('cqu-project-jwt');
+      const config = { headers: { 'Authorization': jwt } };
 
-                    axios.get("/user",  config)
-                        .then((res) => {
-                             console.log(res.data);
-                            this.User=res.data.data;
-                            //console.log(res.data.data.realName);
-                            
-                        })
-                        .catch((error) => {
-                            console.error("请求失败:", error);
-                        })
-
-                }, 500);
-        },
-        created() {
-        this.getuser();
+      axios.get("/user", config)
+        .then((res) => {
+          this.User = res.data.data;
+          this.avatarUrl = "http://localhost:8088" + res.data.data.avatarPath;
+          console.log(this.User);
+        })
+        .catch((error) => {
+          console.error("请求失败:", error);
+        });
     },
-    data() {
-        return {
-            User: {
-                username:'',
-            }
-        };
-    },
+  },
+  created() {
+    this.getuser();
   }
 };
 </script>

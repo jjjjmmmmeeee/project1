@@ -24,28 +24,28 @@
       <div class="table-container">
         <el-table :data="tableData" style="width: 100%" :row-class-name="tableRowClassName">
           <!-- 表格列 -->
-          <el-table-column prop="title" label="任务标题" width="80">
+          <el-table-column prop="title" label="任务标题" width="120">
             <template slot="header">
               <span>任务标题</span>
             </template>
           </el-table-column>
           <!-- 格式化后的接取时间列 -->
-          <el-table-column label="截至时间" width="200">
+          <el-table-column label="截至时间" width="400">
             <template slot-scope="scope">
               {{ formatDateTime(scope.row.dueTime) }}
             </template>
           </el-table-column>
-          <el-table-column prop="startAddress" label="在哪取" width="80">
+          <el-table-column prop="startAddress" label="在哪取" width="400">
             <template slot="header">
               <span>在哪取</span>
             </template>
           </el-table-column>
-          <el-table-column prop="endAddress" label="送到哪" width="80">
+          <el-table-column prop="endAddress" label="送到哪" width="400">
             <template slot="header">
               <span>送到哪</span>
             </template>
           </el-table-column>
-          <el-table-column prop="endAddress" label="报酬" width="80">
+          <el-table-column prop="endAddress" label="报酬" width="450">
             <template slot="header">
               <span>报酬</span>
             </template>
@@ -149,24 +149,24 @@
           }, 500);
       },
       goToTaskDetail(taskId) {
-        let path = '/taskDetailUnTaken'; // 默认的详情页路径
+        let path = '/taskreqcom'; // 默认的详情页路径
   
         // 根据状态选择不同的详情页
         switch (this.MyTaskDTO.state) {
-          case 'un-taken':
-            path = '/taskDetailUnTaken';
-            break;
+          
           case 'incomplete':
-            path = '/taskDetailIncomplete';
+            path = '/taskreqcom';
             break;
           case 'complete':
-            path = '/taskDetailComplete';
+            path = '/tasktakingcom';
             break;
+            //可以公用
           case 'timeout':
-            path = '/taskDetailTimeout';
+            path = '/tasktakingcom';
             break;
+
             case 'unconfirmed':
-            path = '/taskDetailunconfirmed';
+            path = '/tasktakingcom';
             break;
          
         }
