@@ -7,28 +7,28 @@
       <div v-if="isLogin" class="login-container">
         <input type="text" class="usernameinput" v-model="loginData.username" placeholder="用户名" required />
         <input type="password" v-model="loginData.password" placeholder="密码" required />
-        <button type="submit">登录</button>
+        <button type="submit" class="login-button">登录</button>
       </div>
 
-      <div v-else>
+      <div v-else class="register-container">
         <!-- Registration Form -->
         <div>
           <label>用户名 <span class="required">*</span></label>
-          <input type="text" v-model="registerData.username" placeholder="用户名" required />
+          <input type="text" class="yonghuming" v-model="registerData.username" placeholder="用户名" required />
         </div>
         <div>
           <label>密码 <span class="required">*</span></label>
-          <input type="password" v-model="registerData.password" placeholder="密码" required />
+          <input type="password" class="yonghuming" v-model="registerData.password" placeholder="密码" required />
         </div>
         <div>
           <label>确认密码 <span class="required">*</span></label>
-          <input type="password" v-model="registerData.confirmPassword" placeholder="确认密码" @input="validatePasswords"
+          <input type="password" class="yonghuming" v-model="registerData.confirmPassword" placeholder="确认密码" @input="validatePasswords"
             required />
           <span v-if="passwordMismatch" class="error">密码不一致</span>
         </div>
         <div>
           <label>性别 <span class="required">*</span></label>
-          <select v-model="registerData.gender" required>
+          <select v-model="registerData.sex" required>
             <option value="">请选择性别</option>
             <option value="male">男</option>
             <option value="female">女</option>
@@ -36,32 +36,33 @@
         </div>
         <div>
           <label>年龄</label>
-          <input type="number" v-model="registerData.age" placeholder="年龄" />
+          <input type="number" class="yonghuming" v-model="registerData.age" placeholder="年龄" />
         </div>
         <div>
           <label>学号 <span class="required">*</span></label>
-          <input type="text" v-model="registerData.studentId" placeholder="学号" required />
+          <input type="text" class="yonghuming" v-model="registerData.stuId" placeholder="学号" required />
         </div>
         <div>
           <label>真实姓名 <span class="required">*</span></label>
-          <input type="text" v-model="registerData.realName" placeholder="真实姓名" required />
+          <input type="text" class="yonghuming" v-model="registerData.realName" placeholder="真实姓名" required />
         </div>
         <div>
           <label>住址</label>
-          <input type="text" v-model="registerData.address" placeholder="住址" />
+          <input type="text" class="yonghuming" v-model="registerData.address" placeholder="住址" />
         </div>
         <div>
           <label>QQ号</label>
-          <input type="text" v-model="registerData.qq" placeholder="QQ号" />
+          <input type="text" class="yonghuming"  v-model="registerData.qq" placeholder="QQ号" />
         </div>
         <div>
           <label>邮箱 <span class="required">*</span></label>
-          <input type="email" v-model="registerData.email" placeholder="邮箱" required />
-          <button type="button" @click="sendVerificationCode">发送验证码</button>
+          <input type="email" class="yonghuming" v-model="registerData.email" placeholder="邮箱" required />
+          <button type="button" class="fasong" @click="sendVerificationCode">发送验证码</button>
+
         </div>
         <div>
           <label>验证码 <span class="required">*</span></label>
-          <input type="text" v-model="registerData.verificationCode" placeholder="验证码" required />
+          <input type="text" class="yonghuming" v-model="registerData.verificationCode" placeholder="验证码" required />
         </div>
         <button type="submit">注册</button>
       </div>
@@ -86,15 +87,16 @@ export default {
       passwordMismatch: false, // 用于检查密码是否匹配
       loginData: {
         username: '',
-        password: ''
+        password: '' ,
+       confirmPassword: '',
       },
       registerData: {
         username: '',
         password: '',
-        confirmPassword: '',
-        gender: '',
+        
+        sex: '',
         age: '',
-        studentId: '',
+        stuId: '',
         realName: '',
         address: '',
         qq: '',
@@ -109,12 +111,14 @@ export default {
       this.passwordMismatch = this.registerData.password !== this.registerData.confirmPassword;
     },
     sendVerificationCode() {
-      axios.get('http://localhost:8088/sendEmail/' + this.registerData.email)
+      axios.get('http://localhost:8088/sendEmailRegister/' + this.registerData.email)
         .then((res) => {
-
+            console.log(res);
+            alert(res.data.msg)
         })
         .catch((error) => {
           console.error('注册失败:', error);
+          alert("发送邮件失败！")
         });
     },
     handleLogin() {
@@ -132,7 +136,9 @@ export default {
         .then((res) => {
           const jwt = res?.data?.msg; // 登陆时保存返回的jwt
           localStorage.setItem('cqu-project-jwt', jwt);
-          if (jwt !== '账号或密码错误!') {
+          if (jwt == '账号或密码错误!') {
+            alert("账号或密码错误！")
+          }else{
             this.$router.push({ path: '/Home' });
           }
         })
@@ -145,6 +151,7 @@ export default {
         .then((res) => {
           console.log(res)
           if (res.data.msg == "成功") {
+            alert("注册成功！")
             this.isLogin = true
           } else {
             alert(res.data.msg)
@@ -164,6 +171,15 @@ export default {
 };
 </script>
 <style scoped>
+.yonghuming{
+  width: 80%;
+
+}
+.fasong{
+  width: 120rpx;
+  margin: auto;
+}
+
 .login-container {
   display: flex;
   flex-direction: column;
@@ -172,8 +188,11 @@ export default {
   /* 水平居中对齐 */
   justify-content: center;
   /* 垂直居中对齐 */
-  height: 100vh;
+  height: 50vh;
   /* 让容器的高度占满整个视口 */
+  margin: auto;
+  width: 25%;
+
 }
 
 .usernameinput,
@@ -181,13 +200,20 @@ input[type="password"],
 button {
   width: 300px;
   /* 调整输入框和按钮的宽度 */
-  margin: 10px 0;
-  /* 增加输入框和按钮之间的间距 */
-  padding: 10px;
-  /* 增加输入框和按钮的内边距 */
-  box-sizing: border-box;
-  /* 确保内边距不影响元素的宽度 */
+
 }
+.login-button {
+  width: 20%; 
+  margin: 10px 0;
+  padding: 10px;
+  box-sizing: border-box;
+  cursor: pointer;
+  background-color: #ff5e00;
+  color: white;
+  border: none;
+  border-radius: 5px;
+}
+
 
 button {
   cursor: pointer;

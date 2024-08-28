@@ -47,7 +47,7 @@
               <div class="comment-content">
                 <!-- 显示头像-->
                 <div class="avatar-container">
-                  <el-avatar :size="60" :src="getAvatarUrl(comment.avatarPath)" @click.native="goToUserProfile(1)">
+                  <el-avatar :size="60" :src="getAvatarUrl(comment.avatarPath)" @click.native="goToUserProfile(comment.publisherId)">
                     <img src= />
                   </el-avatar>
                 </div>
@@ -552,6 +552,7 @@ export default {
           alert('任务接单成功');
           // 更新任务状态或重新获取任务信息
           this.getInfo();
+          this.$router.push('/availableTask')
         })
         .catch((error) => {
           console.error("接单请求失败:", error);

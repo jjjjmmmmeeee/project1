@@ -58,7 +58,7 @@
               <div class="comment-content">
                 <!-- 显示头像-->
                 <div class="avatar-container">
-                  <el-avatar :size="60" :src="getAvatarUrl(comment.avatarPath)" @click.native="goToUserProfile(1)">
+                  <el-avatar :size="60" :src="getAvatarUrl(comment.avatarPath)" @click.native="goToUserProfile(comment.publisherId)">
                     <img src= />
                   </el-avatar>
                 </div>
