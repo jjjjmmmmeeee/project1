@@ -4,8 +4,8 @@
     <h2 v-else>注册</h2>
 
     <form @submit.prevent="isLogin ? handleLogin() : handleRegister()">
-      <div v-if="isLogin">
-        <input type="text" v-model="loginData.username" placeholder="用户名" required />
+      <div v-if="isLogin" class="login-container">
+        <input type="text" class="usernameinput" v-model="loginData.username" placeholder="用户名" required />
         <input type="password" v-model="loginData.password" placeholder="密码" required />
         <button type="submit">登录</button>
       </div>
@@ -104,6 +104,7 @@ export default {
     };
   },
   methods: {
+
     validatePasswords() {
       this.passwordMismatch = this.registerData.password !== this.registerData.confirmPassword;
     },
@@ -155,14 +156,51 @@ export default {
         });
 
     },
-    forgotPassword(){
+    forgotPassword() {
       this.$router.push('/findbackpassword');
     }
-    
+
   }
 };
 </script>
 <style scoped>
+.login-container {
+  display: flex;
+  flex-direction: column;
+  /* 将子元素垂直排列 */
+  align-items: center;
+  /* 水平居中对齐 */
+  justify-content: center;
+  /* 垂直居中对齐 */
+  height: 100vh;
+  /* 让容器的高度占满整个视口 */
+}
+
+.usernameinput,
+input[type="password"],
+button {
+  width: 300px;
+  /* 调整输入框和按钮的宽度 */
+  margin: 10px 0;
+  /* 增加输入框和按钮之间的间距 */
+  padding: 10px;
+  /* 增加输入框和按钮的内边距 */
+  box-sizing: border-box;
+  /* 确保内边距不影响元素的宽度 */
+}
+
+button {
+  cursor: pointer;
+  background-color: #007BFF;
+  /* 按钮的背景色 */
+  color: white;
+  /* 按钮文字颜色 */
+  border: none;
+  /* 去除按钮边框 */
+  border-radius: 5px;
+  /* 按钮的圆角 */
+}
+
 .auth-container {
   max-width: 400px;
   margin: 0 auto;

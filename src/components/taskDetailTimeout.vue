@@ -52,32 +52,37 @@
           <div class="comments-list">
             <div v-for="comment in comments" :key="comment.id"
               :class="['comment-item', { reply: comment.parentId !== 0 }]">
-              
+
 
 
               <div class="comment-content">
-                <!-- 显示头像，并支持点击上传新头像 -->
+                <!-- 显示头像-->
                 <div class="avatar-container">
-                  <el-avatar :size="60" :src="getAvatarUrl(comment.avatarPath)">
+                  <el-avatar :size="60" :src="getAvatarUrl(comment.avatarPath)" @click.native="goToUserProfile(1)">
                     <img src= />
                   </el-avatar>
                 </div>
                 <div class="comment-content-1">
-                <p>
-                  <strong>{{ comment.publisherUsername }}
-                    {{ comment.parentId !== 0 ? `回复${comment.receiverUsername}` :
-                      `:` }}
-                  </strong>
-                  {{ comment.content }}
-                </p>
-              </div>
-              </div>
-                <div class="comment-footer">
-                  <span class="timestamp">{{ formatDateTime(comment.publishTime) }}</span>
-                  <button @click="replyToComment(comment.id)" class="reply-btn">回复</button>
-                  <button @click="deleteComment(comment.id)" class="delete-btn">Delete</button>
+                  <p>
+                    <strong>{{ comment.publisherUsername }}
+                      {{ comment.parentId !== 0 ? `回复${comment.receiverUsername}` :
+                        `:` }}
+                    </strong>
+                    {{ comment.content }}
+                  </p>
                 </div>
-              
+                <!-- 显示点赞图标和点赞数 -->
+                <div class="like-section">
+                  <i :class="{ 'el-icon-thumb': true, 'liked': comment.like }" @click="toggleLike(comment.id)"></i>
+                  <span>{{ comment.likeNum }}</span>
+                </div>
+              </div>
+              <div class="comment-footer">
+                <span class="timestamp">{{ formatDateTime(comment.publishTime) }}</span>
+                <button @click="replyToComment(comment.id)" class="reply-btn">回复</button>
+                <button @click="deleteComment(comment.id)" class="delete-btn">Delete</button>
+              </div>
+
             </div>
           </div>
           <div class="comment-form">
@@ -85,6 +90,7 @@
             <button @click="postComment">提交评论</button>
           </div>
         </div>
+
         <div v-if="showDialog" class="reply-dialog">
           <div class="dialog-content">
             <h4>回复评论</h4>
@@ -101,6 +107,15 @@
 </template>
 
 <style scoped>
+
+.el-icon-thumb {
+  cursor: pointer;
+  margin-right: 5px;
+}
+
+.el-icon-thumb.liked {
+  color: red; /* 已点赞状态的图标颜色 */
+}
 .comment-content {
   display: flex;
 
@@ -115,7 +130,25 @@
   position: relative;
 }
 
-.comment-content-1{
+.comment-content-1 {
+  width: 92%;
+}
+
+.comment-content {
+  display: flex;
+
+  margin-left: 10px;
+  margin-left: 0%;
+}
+
+.avatar-container {
+  width: 8%;
+  margin-left: 10px;
+  margin-left: 0%;
+  position: relative;
+}
+
+.comment-content-1 {
   width: 92%;
 }
 
@@ -430,6 +463,9 @@ export default {
       deleteid: {
         id: 0,
       },
+      likeDTO:{
+        id:''
+      },
       commentchild: {
         presentCommentId: 1,
         content: ""
@@ -438,6 +474,7 @@ export default {
       showDialog: false,
       replyContent: '',
       replyToCommentId: null,
+      
     };
   },
   mounted() {
@@ -447,6 +484,33 @@ export default {
 
   },
   methods: {
+    toggleLike(val){
+          this.likeDTO.id=val;
+          this.postlike();
+    },
+    
+    postlike(){
+      const jwt = localStorage.getItem('cqu-project-jwt')
+          const config = { headers: { 'Authorization': jwt } }
+          console.log("点赞的评论id是："+this.likeDTO.id);
+          
+          axios.post('http://localhost:8088/task/' + this.myId+'/comment/like',this.likeDTO, config)
+            .then((response) => {
+               console.log(response);
+               this.getComments();
+              
+            })
+            .catch((error) => {
+              console.error("请求失败:", error);
+            })
+    },
+    goToUserProfile(userId) {
+      // 跳转到对应的详情页
+      console.log("点击了按钮");
+
+      this.$router.push({ path: '/othperinf', query: { userId } });
+    },
+
     getAvatarUrl(avatarPath) {
       return `http://localhost:8088${avatarPath}`;
     },
@@ -488,12 +552,14 @@ export default {
         }, 500);
     },
     getComments() {
+      const jwt = localStorage.getItem('cqu-project-jwt')
+      const config = { headers: { 'Authorization': jwt } }
+
       // 你可以替换成实际的 API 请求
-      axios.get('http://localhost:8088/task/' + this.myId + '/comment/' + this.page)
+      axios.get('http://localhost:8088/task/' + this.myId + '/comment/' + this.page,config)
         .then((response) => {
           this.comments = response.data.comments;
           console.log(response);
-
           console.log(this.comments);
         })
         .catch((error) => {

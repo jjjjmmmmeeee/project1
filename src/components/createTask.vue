@@ -114,11 +114,13 @@ export default {
 
         axios.post("/creatingTask", this.form, config)
           .then((res) => {
-            console.log(res.data);
+            console.log(res);
             if(res.data=='Failed to create task: Reward too large.'){
               alert("你输入的报酬太大了")
             }else if(res.data=='Failed to create task: Reward too small.'){
               alert("你小子还要人倒贴？赶紧重新输入报酬")
+            }else if(res.data=='Failed to create task: Due time cannot be earlier than publishTime.'){
+              alert("截至时间不能早于当前时间")
             }else{
               this.$router.push({ path: '/mytask' });
             }

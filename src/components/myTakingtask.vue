@@ -45,7 +45,7 @@
               <span>送到哪</span>
             </template>
           </el-table-column>
-          <el-table-column prop="endAddress" label="报酬" width="450">
+          <el-table-column prop="reward" label="报酬" width="450">
             <template slot="header">
               <span>报酬</span>
             </template>

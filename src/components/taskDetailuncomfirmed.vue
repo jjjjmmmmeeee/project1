@@ -51,18 +51,39 @@
                     <div class="comments-list">
                         <div v-for="comment in comments" :key="comment.id"
                             :class="['comment-item', { reply: comment.parentId !== 0 }]">
-                            <p>
-                                <strong>{{ comment.publisherUsername }}
-                                    {{ comment.parentId !== 0 ? `回复${comment.receiverUsername}` :
-                                    `:` }}
-                                </strong>
-                                {{ comment.content }}
-                            </p>
+
+
+
+                            <div class="comment-content">
+                                <!-- 显示头像-->
+                                <div class="avatar-container">
+                                    <el-avatar :size="60" :src="getAvatarUrl(comment.avatarPath)"
+                                        @click.native="goToUserProfile(1)">
+                                        <img src= />
+                                    </el-avatar>
+                                </div>
+                                <div class="comment-content-1">
+                                    <p>
+                                        <strong>{{ comment.publisherUsername }}
+                                            {{ comment.parentId !== 0 ? `回复${comment.receiverUsername}` :
+                                            `:` }}
+                                        </strong>
+                                        {{ comment.content }}
+                                    </p>
+                                </div>
+                                <!-- 显示点赞图标和点赞数 -->
+                                <div class="like-section">
+                                    <i :class="{ 'el-icon-thumb': true, 'liked': comment.like }"
+                                        @click="toggleLike(comment.id)"></i>
+                                    <span>{{ comment.likeNum }}</span>
+                                </div>
+                            </div>
                             <div class="comment-footer">
                                 <span class="timestamp">{{ formatDateTime(comment.publishTime) }}</span>
                                 <button @click="replyToComment(comment.id)" class="reply-btn">回复</button>
                                 <button @click="deleteComment(comment.id)" class="delete-btn">Delete</button>
                             </div>
+
                         </div>
                     </div>
                     <div class="comment-form">
@@ -70,6 +91,7 @@
                         <button @click="postComment">提交评论</button>
                     </div>
                 </div>
+
                 <div v-if="showDialog" class="reply-dialog">
                     <div class="dialog-content">
                         <h4>回复评论</h4>
@@ -110,28 +132,32 @@ export default {
     data() {
         return {
             tableData: [],
-            myId: "3",
-            rejectDialogVisible: false,
-            rejectForm: {
-                dueTime: '',
-
-            },
             sites: [2, 3, 4],
+
             title: '',
+            myId: "3",
             comments: [],
             page: '1',
             newComment: '',
             deleteid: {
                 id: 0,
             },
+            likeDTO: {
+                id: ''
+            },
             commentchild: {
                 presentCommentId: 1,
                 content: ""
             },
-
             showDialog: false,
             replyContent: '',
             replyToCommentId: null,
+            rejectDialogVisible: false,
+            rejectForm: {
+                dueTime: '',
+
+            },
+
         };
     },
     mounted() {
@@ -141,6 +167,36 @@ export default {
 
     },
     methods: {
+        toggleLike(val){
+          this.likeDTO.id=val;
+          this.postlike();
+    },
+    
+    postlike(){
+      const jwt = localStorage.getItem('cqu-project-jwt')
+          const config = { headers: { 'Authorization': jwt } }
+          console.log("点赞的评论id是："+this.likeDTO.id);
+          
+          axios.post('http://localhost:8088/task/' + this.myId+'/comment/like',this.likeDTO, config)
+            .then((response) => {
+               console.log(response);
+               this.getComments();
+              
+            })
+            .catch((error) => {
+              console.error("请求失败:", error);
+            })
+    },
+    goToUserProfile(userId) {
+      // 跳转到对应的详情页
+      console.log("点击了按钮");
+
+      this.$router.push({ path: '/othperinf', query: { userId } });
+    },
+    getAvatarUrl(avatarPath) {
+      return `http://localhost:8088${avatarPath}`;
+    },
+
         formatDateTime(timestamp) {
             if (!timestamp) return '';
             const date = new Date(timestamp);
@@ -176,11 +232,11 @@ export default {
         },
         confirmCompletion(myId) {
             console.log(this.myId);
-            
+
             const jwt = localStorage.getItem('cqu-project-jwt');
             const config = { headers: { 'Authorization': jwt } };
 
-            axios.post('http://localhost:8088/task/'+this.myId+'/confirm', {}, config)
+            axios.post('http://localhost:8088/task/' + this.myId + '/confirm', {}, config)
                 .then(response => {
                     this.$message.success("任务已标记为完成");
                     this.getInfo();
@@ -190,34 +246,34 @@ export default {
                 });
         },
         validateDueTime(rule, value, callback) {
-      if (!this.form.date1 || !this.form.date2) {
-        callback(new Error('请选择日期和时间'));
-      } else {
-        callback();
-      }
-    },
-    // onSubmit() {
-    //   this.$refs.form.validate((valid) => {
-    //     if (valid) {
-    //       // 合并 date1 和 date2 为一个完整的时间戳
-    //       const date = new Date(this.form.date1);
-    //       const time = new Date(this.form.date2);
+            if (!this.form.date1 || !this.form.date2) {
+                callback(new Error('请选择日期和时间'));
+            } else {
+                callback();
+            }
+        },
+        // onSubmit() {
+        //   this.$refs.form.validate((valid) => {
+        //     if (valid) {
+        //       // 合并 date1 和 date2 为一个完整的时间戳
+        //       const date = new Date(this.form.date1);
+        //       const time = new Date(this.form.date2);
 
-    //       date.setHours(time.getHours());
-    //       date.setMinutes(time.getMinutes());
-    //       date.setSeconds(time.getSeconds());
+        //       date.setHours(time.getHours());
+        //       date.setMinutes(time.getMinutes());
+        //       date.setSeconds(time.getSeconds());
 
-    //       this.form.dueTime = date.getTime();
+        //       this.form.dueTime = date.getTime();
 
-    //       console.log('提交的数据:', this.form);
-    //       this.submitRejection();
+        //       console.log('提交的数据:', this.form);
+        //       this.submitRejection();
 
-    //     } else {
-    //       alert('请填写所有必填项!');
-    //       return false;
-    //     }
-    //   });
-    // },
+        //     } else {
+        //       alert('请填写所有必填项!');
+        //       return false;
+        //     }
+        //   });
+        // },
         openRejectDialog() {
             this.rejectDialogVisible = true;
         },
@@ -228,9 +284,9 @@ export default {
             console.log(this.myId);
             console.log(this.form);
             const dueTime = new Date(this.rejectForm.dueTime).getTime();
-            console.log({dueTime});
-            
-            axios.post('http://localhost:8088/task/'+this.myId+'/refuse', { dueTime }, config)
+            console.log({ dueTime });
+
+            axios.post('http://localhost:8088/task/' + this.myId + '/refuse', { dueTime }, config)
                 .then(response => {
                     this.$message.success("拒绝任务成功");
                     this.rejectDialogVisible = false;
@@ -241,18 +297,20 @@ export default {
                 });
         },
         getComments() {
-            // 你可以替换成实际的 API 请求
-            axios.get('http://localhost:8088/task/' + this.myId + '/comment/' + this.page)
-                .then((response) => {
-                    this.comments = response.data.comments;
-                    console.log(response);
+      const jwt = localStorage.getItem('cqu-project-jwt')
+      const config = { headers: { 'Authorization': jwt } }
 
-                    console.log(this.comments);
-                })
-                .catch((error) => {
-                    console.error("获取评论失败:", error);
-                });
-        },
+      // 你可以替换成实际的 API 请求
+      axios.get('http://localhost:8088/task/' + this.myId + '/comment/' + this.page,config)
+        .then((response) => {
+          this.comments = response.data.comments;
+          console.log(response);
+          console.log(this.comments);
+        })
+        .catch((error) => {
+          console.error("获取评论失败:", error);
+        });
+    },
         deleteComment(id) {
             this.deleteid.id = id
 
@@ -343,6 +401,34 @@ export default {
 </script>
 
 <style scoped>
+.el-icon-thumb {
+    cursor: pointer;
+    margin-right: 5px;
+}
+
+.el-icon-thumb.liked {
+    color: red;
+    /* 已点赞状态的图标颜色 */
+}
+
+.comment-content {
+    display: flex;
+
+    margin-left: 10px;
+    margin-left: 0%;
+}
+
+.avatar-container {
+    width: 8%;
+    margin-left: 10px;
+    margin-left: 0%;
+    position: relative;
+}
+
+.comment-content-1 {
+    width: 92%;
+}
+
 .task-container {
     max-width: 900px;
     margin: 0 auto;

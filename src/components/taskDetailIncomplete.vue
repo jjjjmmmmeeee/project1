@@ -1,5 +1,5 @@
 <template>
-    
+
     <div class="task-container">
         <ul class="task-list">
             <li v-for="item in tableData" :key="item.id" class="task-item">
@@ -32,7 +32,7 @@
                 <hr class="divider" />
                 <div>
                     <p><strong>接单人：</strong>{{ item.takerUsername }} <span class="user-id">(ID: {{
-                            item.takerId}})</span></p>
+                        item.takerId }})</span></p>
                     <hr class="divider" />
                     <p><strong>性别：</strong>{{ item.takerSex }}</p>
                     <hr class="divider" />
@@ -54,12 +54,38 @@
                         <div v-for="comment in comments" :key="comment.id"
                             :class="['comment-item', { reply: comment.parentId !== 0 }]">
 
-                            <p><strong>{{ comment.publisherUsername }}:</strong> {{ comment.content }}</p>
+
+
+                            <div class="comment-content">
+                                <!-- 显示头像-->
+                                <div class="avatar-container">
+                                    <el-avatar :size="60" :src="getAvatarUrl(comment.avatarPath)"
+                                        @click.native="goToUserProfile(1)">
+                                        <img src= />
+                                    </el-avatar>
+                                </div>
+                                <div class="comment-content-1">
+                                    <p>
+                                        <strong>{{ comment.publisherUsername }}
+                                            {{ comment.parentId !== 0 ? `回复${comment.receiverUsername}` :
+                                            `:` }}
+                                        </strong>
+                                        {{ comment.content }}
+                                    </p>
+                                </div>
+                                <!-- 显示点赞图标和点赞数 -->
+                                <div class="like-section">
+                                    <i :class="{ 'el-icon-thumb': true, 'liked': comment.like }"
+                                        @click="toggleLike(comment.id)"></i>
+                                    <span>{{ comment.likeNum }}</span>
+                                </div>
+                            </div>
                             <div class="comment-footer">
                                 <span class="timestamp">{{ formatDateTime(comment.publishTime) }}</span>
                                 <button @click="replyToComment(comment.id)" class="reply-btn">回复</button>
                                 <button @click="deleteComment(comment.id)" class="delete-btn">Delete</button>
                             </div>
+
                         </div>
                     </div>
                     <div class="comment-form">
@@ -67,6 +93,7 @@
                         <button @click="postComment">提交评论</button>
                     </div>
                 </div>
+
                 <div v-if="showDialog" class="reply-dialog">
                     <div class="dialog-content">
                         <h4>回复评论</h4>
@@ -80,20 +107,48 @@
             </li>
         </ul>
         <div class="action-buttons">
-        <el-popover placement="top" width="200" v-model="visible">
-            <p>该任务已被接受，取消将扣除你5点经验值，是否确定取消？</p>
-            <div class="popover-buttons">
-                <el-button size="mini" type="text" @click="no">取消</el-button>
-                <el-button type="danger" size="mini" @click="yes">确定</el-button>
-            </div>
-            <el-button slot="reference" class="delete-button">取消任务</el-button>
-        </el-popover>
-        
-    </div>
+            <el-popover placement="top" width="200" v-model="visible">
+                <p>该任务已被接受，取消将扣除你5点经验值，是否确定取消？</p>
+                <div class="popover-buttons">
+                    <el-button size="mini" type="text" @click="no">取消</el-button>
+                    <el-button type="danger" size="mini" @click="yes">确定</el-button>
+                </div>
+                <el-button slot="reference" class="delete-button">取消任务</el-button>
+            </el-popover>
+
+        </div>
     </div>
 </template>
 
 <style scoped>
+.el-icon-thumb {
+    cursor: pointer;
+    margin-right: 5px;
+}
+
+.el-icon-thumb.liked {
+    color: red;
+    /* 已点赞状态的图标颜色 */
+}
+
+.comment-content {
+    display: flex;
+
+    margin-left: 10px;
+    margin-left: 0%;
+}
+
+.avatar-container {
+    width: 8%;
+    margin-left: 10px;
+    margin-left: 0%;
+    position: relative;
+}
+
+.comment-content-1 {
+    width: 92%;
+}
+
 .task-container {
     max-width: 900px;
     margin: 0 auto;
@@ -387,10 +442,13 @@
     margin-left: 20px;
     /* 向右移动以突出显示 */
 }
+
 .action-buttons {
     display: flex;
-    justify-content: space-between; /* 使按钮水平分布并自动分配空间 */
-    margin-top: 20px; /* 添加顶部边距 */
+    justify-content: space-between;
+    /* 使按钮水平分布并自动分配空间 */
+    margin-top: 20px;
+    /* 添加顶部边距 */
 }
 
 .popover-buttons {
@@ -400,7 +458,8 @@
 }
 
 .popover-buttons .el-button {
-    margin-left: 5px; /* 减少按钮之间的间距 */
+    margin-left: 5px;
+    /* 减少按钮之间的间距 */
 }
 
 .delete-button {
@@ -432,11 +491,13 @@ export default {
             deleteid: {
                 id: 0,
             },
+            likeDTO: {
+                id: ''
+            },
             commentchild: {
                 presentCommentId: 1,
                 content: ""
             },
-
             showDialog: false,
             replyContent: '',
             replyToCommentId: null,
@@ -450,6 +511,36 @@ export default {
 
     },
     methods: {
+        toggleLike(val) {
+            this.likeDTO.id = val;
+            this.postlike();
+        },
+
+        postlike() {
+            const jwt = localStorage.getItem('cqu-project-jwt')
+            const config = { headers: { 'Authorization': jwt } }
+            console.log("点赞的评论id是：" + this.likeDTO.id);
+
+            axios.post('http://localhost:8088/task/' + this.myId + '/comment/like', this.likeDTO, config)
+                .then((response) => {
+                    console.log(response);
+                    this.getComments();
+
+                })
+                .catch((error) => {
+                    console.error("请求失败:", error);
+                })
+        },
+        goToUserProfile(userId) {
+            // 跳转到对应的详情页
+            console.log("点击了按钮");
+
+            this.$router.push({ path: '/othperinf', query: { userId } });
+        },
+        getAvatarUrl(avatarPath) {
+            return `http://localhost:8088${avatarPath}`;
+        },
+
         formatDateTime(timestamp) {
             if (!timestamp) return '';
             const date = new Date(timestamp);
@@ -513,7 +604,7 @@ export default {
         confirmAction() {
             const jwt = localStorage.getItem('cqu-project-jwt');
             const config = { headers: { 'Authorization': jwt } };
-            
+
             axios.post('http://localhost:8088/task/' + this.myId + '/requestConfirm', {}, config)
                 .then((response) => {
                     console.log(response);
@@ -525,12 +616,14 @@ export default {
                 });
         },
         getComments() {
+            const jwt = localStorage.getItem('cqu-project-jwt')
+            const config = { headers: { 'Authorization': jwt } }
+
             // 你可以替换成实际的 API 请求
-            axios.get('http://localhost:8088/task/' + this.myId + '/comment/' + this.page)
+            axios.get('http://localhost:8088/task/' + this.myId + '/comment/' + this.page, config)
                 .then((response) => {
                     this.comments = response.data.comments;
                     console.log(response);
-
                     console.log(this.comments);
                 })
                 .catch((error) => {

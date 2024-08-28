@@ -19,6 +19,8 @@ import EditProfile from "@/components/edit-profile.vue";
 import Othperinf from "@/components/othperinf.vue";
 import Findback from "@/components/findback.vue";
 import Chat from "@/components/chat.vue";
+import Taskreqcom from "@/components/taskreqcom.vue";
+import Tasktakingcom from "@/components/tasktakingcom.vue";
 Vue.use(VueRouter)
 
 const router =new VueRouter({
@@ -40,7 +42,9 @@ const router =new VueRouter({
         {path:'/TaskInformation',component:TaskInformation},
         {path:'/edit-profile',component:EditProfile},
         {path:'/findbackpassword',component:Findback},
-        {path:'/chat',component:Chat}
+        {path:'/chat',component:Chat},
+        {path:'/taskreqcom',component:Taskreqcom},
+        {path:'/tasktakingcom',component:Tasktakingcom},
         
 
 

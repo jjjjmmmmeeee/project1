@@ -62,8 +62,8 @@
                 </div>
                 <!-- 显示点赞图标和点赞数 -->
                 <div class="like-section">
-                  <i :class="{ 'el-icon-thumb': true, 'liked': likestate }" @click="toggleLike(comment.id)"></i>
-                  <span>点赞数</span>
+                  <i :class="{ 'el-icon-thumb': true, 'liked': comment.like }" @click="toggleLike(comment.id)"></i>
+                  <span>{{ comment.likeNum }}</span>
                 </div>
               </div>
               <div class="comment-footer">
@@ -97,22 +97,16 @@
 </template>
 
 <style scoped>
-/* .like-section {
-  display: flex;
-  align-items: center;
-  position: absolute;
-  bottom: 10px;
-  right: 10px;
-} */
-
 .el-icon-thumb {
   cursor: pointer;
   margin-right: 5px;
 }
 
 .el-icon-thumb.liked {
-  color: red; /* 已点赞状态的图标颜色 */
+  color: red;
+  /* 已点赞状态的图标颜色 */
 }
+
 .comment-content {
   display: flex;
 
@@ -422,14 +416,14 @@ export default {
       deleteid: {
         id: 0,
       },
-      likeDTO:{
-        comment_id:''
+      likeDTO: {
+        id: ''
       },
       commentchild: {
         presentCommentId: 1,
         content: ""
       },
-      likestate:true,
+      likestate: true,
 
       showDialog: false,
       replyContent: '',
@@ -438,35 +432,29 @@ export default {
   },
   mounted() {
     this.myId = this.$route.query.taskId;
-
     this.getInfo();
     this.getComments();
-    this.checklike();
-
   },
   methods: {
-    checklike(val){
+    toggleLike(val) {
+      this.likeDTO.id = val;
+      this.postlike();
+    },
 
-    },
-    toggleLike(val){
-          this.likeDTO.comment_id=val;
-          this.postlike();
-    },
-    
-    postlike(){
+    postlike() {
       const jwt = localStorage.getItem('cqu-project-jwt')
-          const config = { headers: { 'Authorization': jwt } }
-          console.log("点赞的评论id是："+this.likeDTO.comment_id);
-          
-          axios.post('http://localhost:8088/task/' + this.myId+'/comment/like',this.likeDTO, config)
-            .then((response) => {
-               console.log(response);
-               this.checklike();
-              
-            })
-            .catch((error) => {
-              console.error("请求失败:", error);
-            })
+      const config = { headers: { 'Authorization': jwt } }
+      console.log("点赞的评论id是：" + this.likeDTO.id);
+
+      axios.post('http://localhost:8088/task/' + this.myId + '/comment/like', this.likeDTO, config)
+        .then((response) => {
+          console.log(response);
+          this.getComments();
+
+        })
+        .catch((error) => {
+          console.error("请求失败:", error);
+        })
     },
     goToUserProfile(userId) {
       // 跳转到对应的详情页
@@ -519,8 +507,11 @@ export default {
         }, 500);
     },
     getComments() {
+      const jwt = localStorage.getItem('cqu-project-jwt')
+      const config = { headers: { 'Authorization': jwt } }
+
       // 你可以替换成实际的 API 请求
-      axios.get('http://localhost:8088/task/' + this.myId + '/comment/' + this.page)
+      axios.get('http://localhost:8088/task/' + this.myId + '/comment/' + this.page, config)
         .then((response) => {
           this.comments = response.data.comments;
           console.log(response);
