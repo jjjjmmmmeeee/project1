@@ -21,6 +21,7 @@ import Findback from "@/components/findback.vue";
 import Chat from "@/components/chat.vue";
 import Taskreqcom from "@/components/taskreqcom.vue";
 import Tasktakingcom from "@/components/tasktakingcom.vue";
+import UserInfo from "@/components/UserInfo.vue";
 Vue.use(VueRouter)
 
 const router =new VueRouter({
@@ -45,7 +46,7 @@ const router =new VueRouter({
         {path:'/chat',component:Chat},
         {path:'/taskreqcom',component:Taskreqcom},
         {path:'/tasktakingcom',component:Tasktakingcom},
-        
+        {path:'/userinfo',component:UserInfo}
 
 
 

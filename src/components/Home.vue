@@ -2,17 +2,23 @@
   <div class="main-page">
     <!-- 用户信息部分 -->
     <div class="user-info">
-      <!-- <img :src="userAvatar" alt="User Avatar" class="user-avatar" @click="goToProfile" /> -->
       <img :src="avatarUrl" alt="User Avatar" class="user-avatar" @click="goToProfile" />
+      <div class="user-details">
+        <span class="user-name">{{ User.username }}</span>
+      </div>
     </div>
-
+<!-- <div><button @click="navigateTo('userinfo')">111111111111</button></div> -->
     <!-- 按钮部分 -->
     <div class="button-container">
-      <button class="btn btn-publish" @click="navigateTo('mytask')">我的发布</button>
-      <button class="btn btn-order" @click="navigateTo('myTakingtask')">我的接单</button>
-      <button class="btn btn-market" @click="navigateTo('availableTask')">任务市场</button>
+      <div class="top-buttons">
+        <button class="btn btn-publish" @click="navigateTo('mytask')">我的发布</button>
+        <button class="btn btn-order" @click="navigateTo('myTakingtask')">我的接单</button>
+      </div>
+      <div class="bottom-buttons">
+        <button class="btn btn-market" @click="navigateTo('availableTask')">任务市场</button>
+        <button class="btn" @click="gotochat">私信聊天</button>
+      </div>
     </div>
-    <button @click="gotochat">聊天</button>
   </div>
 </template>
 
@@ -40,6 +46,9 @@
   display: flex;
   align-items: center;
   z-index: 10; /* Ensures the user info is above other elements */
+  background: rgba(255, 255, 255, 0.8); /* Optional: adds a background for better readability */
+  padding: 10px;
+  border-radius: 10px;
 }
 
 .user-avatar {
@@ -50,13 +59,34 @@
   margin-right: 10px;
 }
 
+.user-details {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+}
+
+.user-name {
+  font-size: 16px;
+  font-weight: bold;
+}
+
 /* Button container styling */
 .button-container {
   display: flex;
-  justify-content: space-around;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
   width: 100%;
   max-width: 800px; /* Set a max-width for better layout control */
   margin-top: 100px; /* Adjust spacing from the top */
+}
+
+/* Group styling for buttons */
+.top-buttons, .bottom-buttons {
+  display: flex;
+  justify-content: space-around;
+  width: 100%;
+  margin: 10px 0; /* Adjust spacing between button groups */
 }
 
 /* General button styling */
@@ -66,7 +96,7 @@
   font-size: 18px;
   border-radius: 5px;
   cursor: pointer;
-  color: #fff;
+  color: #2b2a2a;
   font-weight: bold;
   transition: background-color 0.3s, transform 0.3s;
 }

@@ -30,24 +30,38 @@
     <div class="table-container">
       <el-table :data="tableData" style="width: 100%" :row-class-name="tableRowClassName">
         <!-- 表格列 -->
-        <el-table-column prop="username" label="名字" width="80">
+        <el-table-column prop="title" label="标题" width="150">
           <template slot="header">
-            <span>名字</span>
+            <span>标题</span>
           </template>
         </el-table-column>
-        <el-table-column prop="startAddress" label="开始地点" width="180">
+        <el-table-column prop="startAddress" label="开始地点" width="200">
           <template slot="header">
             <span>开始地点</span>
           </template>
         </el-table-column>
-        <el-table-column prop="endAddress" label="结束地点" width="180">
+        
+        <el-table-column prop="endAddress" label="结束地点" width="200">
           <template slot="header">
             <span>结束地点</span>
           </template>
         </el-table-column>
-        <el-table-column prop="publishTime" label="发布时间">
+        <el-table-column prop="username" label="用户昵称" width="300">
+          <template slot="header">
+            <span>用户昵称</span>
+          </template>
+        </el-table-column>
+        <!-- <el-table-column prop="publishTime" label="发布时间">
           <template slot="header">
             <span>发布时间</span>
+            <el-button @click="handleSort('publish_time')" size="mini" type="text">
+              <i :class="['el-icon-d-caret']"></i>
+            </el-button>
+          </template>
+        </el-table-column> -->
+        <el-table-column prop="dueTime" label="截止时间">
+          <template slot="header">
+            <span>截止时间</span>
             <el-button @click="handleSort('publish_time')" size="mini" type="text">
               <i :class="['el-icon-d-caret']"></i>
             </el-button>
@@ -128,6 +142,8 @@ export default {
         .then((res) => {
           this.tableData = res.data.records;
           this.total = res.data.total;
+          console.log(this.tableData[0]);
+          
         })
         .catch((error) => {
           console.error("请求失败:", error);
@@ -154,7 +170,8 @@ export default {
         sortOrder: "reward", // 排序属性
         page: 1,
         isDesc: true, // 是否降序
-        keyword:""
+        keyword:"",
+        
       },
       total: 0,
       taskId: '',

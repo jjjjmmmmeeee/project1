@@ -10,9 +10,7 @@
         <el-form-item label="QQ" prop="qq">
           <el-input v-model="form.qq" placeholder="请输入QQ"></el-input>
         </el-form-item>
-        <el-form-item label="邮箱" prop="email">
-          <el-input v-model="form.email" placeholder="请输入邮箱"></el-input>
-        </el-form-item>
+        
         <el-form-item label="电话" prop="phone">
           <el-input v-model="form.phone" placeholder="请输入电话"></el-input>
         </el-form-item>

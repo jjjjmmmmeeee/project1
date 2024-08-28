@@ -212,6 +212,7 @@ export default {
 
     populateUserInfo() {
       this.userInfo = {
+        昵称:this.User.username,
         真实姓名: this.User.realName,
         账号ID: this.User.id,
         性别: this.User.sex,
