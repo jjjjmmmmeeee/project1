@@ -30,22 +30,22 @@
             </template>
           </el-table-column>
           <!-- 格式化后的接取时间列 -->
-          <el-table-column label="截至时间" width="400">
+          <el-table-column label="截至时间" width="200">
             <template slot-scope="scope">
               {{ formatDateTime(scope.row.dueTime) }}
             </template>
           </el-table-column>
-          <el-table-column prop="startAddress" label="在哪取" width="400">
+          <el-table-column prop="startAddress" label="在哪取" width="200">
             <template slot="header">
               <span>在哪取</span>
             </template>
           </el-table-column>
-          <el-table-column prop="endAddress" label="送到哪" width="400">
+          <el-table-column prop="endAddress" label="送到哪" width="200">
             <template slot="header">
               <span>送到哪</span>
             </template>
           </el-table-column>
-          <el-table-column prop="reward" label="报酬" width="450">
+          <el-table-column prop="reward" label="报酬" width="250">
             <template slot="header">
               <span>报酬</span>
             </template>
